@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
-import { getSession } from "@/lib/auth";
+import { getSession, canUseStudio } from "@/lib/auth";
 import {
   generateIPBlueprint,
   generateBookArchitecture,
@@ -31,6 +31,12 @@ async function requireCreatorSession() {
   if (!session) redirect("/login");
   return session;
 }
+
+const PLAN_REQUIRED: StudioState = {
+  status: "error",
+  message:
+    "The AI Studio Engine is available on the Studio and Platform plans. Upgrade to continue.",
+};
 
 async function loadArtifact(
   userId: string,
@@ -89,6 +95,7 @@ export async function saveSourceMaterial(
     return { status: "error", message: "Database not connected yet." };
   }
   const session = await requireCreatorSession();
+  if (!canUseStudio(session)) return PLAN_REQUIRED;
   const source = String(formData.get("source") ?? "").trim();
   if (source.length < 40) {
     return {
@@ -126,6 +133,7 @@ async function runStage(
     return { status: "error", message: "Database not connected yet." };
   }
   const session = await requireCreatorSession();
+  if (!canUseStudio(session)) return PLAN_REQUIRED;
 
   const sourceRow = await loadArtifact(session.userId, "source");
   const sourceText =

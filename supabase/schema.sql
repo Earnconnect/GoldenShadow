@@ -127,6 +127,10 @@ create table if not exists public.profiles (
   creator_slug text
 );
 
+-- Phase 10: membership plan. 'none' until they buy/are granted access.
+-- Gates the AI Studio Engine ('studio' | 'platform' unlock it).
+alter table public.profiles add column if not exists plan text not null default 'none';
+
 alter table public.profiles enable row level security;
 
 drop policy if exists "users read own profile" on public.profiles;

@@ -8,7 +8,7 @@ import StudioEngine from "@/components/StudioEngine";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { isAnthropicConfigured } from "@/lib/anthropic/config";
-import { getSession } from "@/lib/auth";
+import { getSession, canUseStudio } from "@/lib/auth";
 import type { ArtifactRow } from "@/lib/anthropic/types";
 
 export const metadata: Metadata = {
@@ -48,6 +48,44 @@ export default async function StudioPage() {
 
   const session = await getSession();
   if (!session) redirect("/login");
+
+  // Membership gate: the AI Studio Engine is for Studio/Platform members.
+  if (!canUseStudio(session)) {
+    return (
+      <>
+        <Nav />
+        <main>
+          <PageHeader
+            eyebrow="Studio Engine"
+            title={
+              <>
+                Unlock the <em>Studio Engine</em>
+              </>
+            }
+            subtitle="The AI publishing engine is available on the Studio and Platform plans. Upgrade to turn your IP into a book."
+            breadcrumbs={[
+              { href: "/", label: "Home" },
+              { href: "/dashboard", label: "Dashboard" },
+            ]}
+          />
+          <section className="page-section">
+            <div className="empty-state">
+              <h3>Available on Studio &amp; Platform</h3>
+              <p>
+                Your current plan doesn&apos;t include the AI Studio Engine.
+                Explore the plans or apply to upgrade — your studio contact will
+                get you set up.
+              </p>
+              <Link href="/#pricing" className="btn-dark">
+                View Plans
+              </Link>
+            </div>
+          </section>
+        </main>
+        <Footer />
+      </>
+    );
+  }
 
   const supabase = await createClient();
   const { data } = await supabase

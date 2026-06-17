@@ -9,7 +9,7 @@ import {
 } from "@/lib/anthropic/engine";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
-import { getSession } from "@/lib/auth";
+import { getSession, canUseStudio } from "@/lib/auth";
 import {
   toChapterSet,
   type ArtifactRow,
@@ -44,6 +44,12 @@ export async function POST(request: NextRequest) {
     const session = await getSession();
     if (!session) {
       return NextResponse.json({ error: "Not signed in." }, { status: 401 });
+    }
+    if (!canUseStudio(session)) {
+      return NextResponse.json(
+        { error: "The Studio Engine is available on the Studio and Platform plans." },
+        { status: 403 }
+      );
     }
     userId = session.userId;
     creatorSlug = session.profile?.creator_slug ?? null;

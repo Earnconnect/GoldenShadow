@@ -40,19 +40,41 @@ export async function POST(request: NextRequest) {
     const session = event.data.object as Stripe.Checkout.Session;
     const admin = createAdminClient();
 
+    const tier = session.metadata?.tier ?? null;
+    const email = session.customer_details?.email ?? null;
+
     if (admin) {
       await admin.from("orders").insert({
-        tier: session.metadata?.tier ?? null,
+        tier,
         mode: session.mode,
         amount_total: session.amount_total,
         currency: session.currency,
-        customer_email: session.customer_details?.email ?? null,
+        customer_email: email,
         customer_name: session.customer_details?.name ?? null,
         status: session.payment_status ?? "complete",
         stripe_session_id: session.id,
         stripe_customer_id:
           typeof session.customer === "string" ? session.customer : null,
       });
+
+      // Best-effort: upgrade the buyer's membership plan if they have an account
+      // (matched by email). Never throws — a failure here must not fail the webhook.
+      if (email && (tier === "starter" || tier === "studio" || tier === "platform")) {
+        try {
+          const { data } = await admin.auth.admin.listUsers({ perPage: 1000 });
+          const match = data?.users.find(
+            (u) => u.email?.toLowerCase() === email.toLowerCase()
+          );
+          if (match) {
+            await admin
+              .from("profiles")
+              .update({ plan: tier })
+              .eq("id", match.id);
+          }
+        } catch {
+          // ignore — admin can set the plan manually in /admin/users
+        }
+      }
     }
     // If the admin client isn't configured, we still return 200 — the payment
     // succeeded; we just couldn't record it. (Add SUPABASE_SERVICE_ROLE_KEY.)

@@ -7,7 +7,7 @@ import PageHeader from "@/components/PageHeader";
 import CreatorProfileEditor from "@/components/CreatorProfileEditor";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
-import { getSession, isAdmin } from "@/lib/auth";
+import { getSession, isAdmin, canUseStudio, PLAN_LABEL } from "@/lib/auth";
 import { getCreatorBySlug } from "@/lib/creators-db";
 import { signOut } from "./actions";
 
@@ -97,7 +97,9 @@ export default async function DashboardPage() {
           <div className="admin-bar">
             <p className="result-count" style={{ margin: 0 }}>
               Signed in as {session.email}
-              {isAdmin(session) ? " · admin" : ""}
+              {isAdmin(session)
+                ? " · admin"
+                : ` · ${PLAN_LABEL[session.profile?.plan ?? "none"] ?? "No plan"}`}
             </p>
             <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
               {isAdmin(session) && (
@@ -146,17 +148,30 @@ export default async function DashboardPage() {
           <p className="profile-section-label" style={{ marginTop: "56px" }}>
             AI Studio Engine
           </p>
-          <Link href="/dashboard/studio" className="studio-cta">
-            <div>
-              <h3>Turn your IP into a book</h3>
-              <p>
-                Feed the engine your talks, transcripts, and notes — get an IP
-                blueprint, book architecture, a sample chapter, and a product
-                suite. Human-led, AI-accelerated.
-              </p>
-            </div>
-            <span className="studio-cta-arrow">Open the Studio Engine →</span>
-          </Link>
+          {canUseStudio(session) ? (
+            <Link href="/dashboard/studio" className="studio-cta">
+              <div>
+                <h3>Turn your IP into a book</h3>
+                <p>
+                  Feed the engine your talks, transcripts, and notes — get an IP
+                  blueprint, book architecture, a sample chapter, and a product
+                  suite. Human-led, AI-accelerated.
+                </p>
+              </div>
+              <span className="studio-cta-arrow">Open the Studio Engine →</span>
+            </Link>
+          ) : (
+            <Link href="/#pricing" className="studio-cta">
+              <div>
+                <h3>Unlock the Studio Engine</h3>
+                <p>
+                  The AI publishing engine is available on the Studio and
+                  Platform plans. Upgrade to turn your IP into a book.
+                </p>
+              </div>
+              <span className="studio-cta-arrow">View plans →</span>
+            </Link>
+          )}
 
           {/* Profile editor */}
           <p className="profile-section-label" style={{ marginTop: "56px" }}>
