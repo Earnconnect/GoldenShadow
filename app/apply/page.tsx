@@ -4,6 +4,7 @@ import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import PageHeader from "@/components/PageHeader";
 import ApplyForm from "@/components/ApplyForm";
+import { getSettings } from "@/lib/settings";
 
 export const metadata: Metadata = {
   title: "Apply — Golden Shadow Publishing",
@@ -11,7 +12,11 @@ export const metadata: Metadata = {
     "Apply to turn your expertise into books, products, and enduring revenue with Golden Shadow Publishing.",
 };
 
-export default function ApplyPage() {
+export const revalidate = 60;
+
+export default async function ApplyPage() {
+  const settings = await getSettings();
+
   return (
     <>
       <Nav />
@@ -29,13 +34,28 @@ export default function ApplyPage() {
           breadcrumbs={[{ href: "/", label: "Home" }]}
         />
         <section className="page-section apply-section">
-          <ApplyForm />
-          <p
-            className="pricing-note"
-            style={{ marginTop: "32px", textAlign: "center" }}
-          >
-            Already a member? <Link href="/login">Log in →</Link>
-          </p>
+          {settings.applicationsOpen ? (
+            <>
+              <ApplyForm />
+              <p
+                className="pricing-note"
+                style={{ marginTop: "32px", textAlign: "center" }}
+              >
+                Already a member? <Link href="/login">Log in →</Link>
+              </p>
+            </>
+          ) : (
+            <div className="empty-state">
+              <h3>Applications are currently closed</h3>
+              <p>
+                We&apos;ve paused new applications for now. Reach out and
+                we&apos;ll let you know when intake reopens.
+              </p>
+              <a href={`mailto:${settings.contactEmail}`} className="btn-dark">
+                Contact the Studio
+              </a>
+            </div>
+          )}
         </section>
       </main>
       <Footer />

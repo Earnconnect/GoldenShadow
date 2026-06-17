@@ -1,26 +1,21 @@
 import HeroStats from "@/components/HeroStats";
+import { getSettings } from "@/lib/settings";
 
-export default function Hero() {
+export default async function Hero() {
+  const settings = await getSettings();
   return (
     <section id="hero">
       <div className="hero-bg">
         <span>GS</span>
       </div>
       <div className="hero-content">
-        <p className="eyebrow">
-          The IP Marketplace for Creators &amp; Executives · Est. 2026
-        </p>
+        <p className="eyebrow">{settings.heroEyebrow}</p>
         <h1 className="hero-head">
           Curated by the <em>obsessed,</em>
           <br />
           built for <em>legacy.</em>
         </h1>
-        <p className="hero-sub">
-          Golden Shadow Publishing is the marketplace where creators and
-          executives turn intellectual property into books, products, and
-          enduring revenue — no algorithms, just authentic partnerships and real
-          assets.
-        </p>
+        <p className="hero-sub">{settings.heroSubtitle}</p>
         <div className="hero-actions">
           <a href="#cta" className="btn-dark">
             Apply as a Creator

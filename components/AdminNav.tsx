@@ -10,6 +10,7 @@ const TABS: { href: string; key: string; label: string }[] = [
   { href: "/admin/creators", key: "creators", label: "Creators" },
   { href: "/admin/users", key: "users", label: "Users" },
   { href: "/admin/insights", key: "insights", label: "Insights" },
+  { href: "/admin/settings", key: "settings", label: "Settings" },
 ];
 
 export type AdminTab =
@@ -20,7 +21,8 @@ export type AdminTab =
   | "journal"
   | "creators"
   | "users"
-  | "insights";
+  | "insights"
+  | "settings";
 
 export default function AdminNav({ active }: { active: AdminTab }) {
   return (
