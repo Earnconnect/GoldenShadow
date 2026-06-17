@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Golden Shadow Publishing — Project Estimate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --ink:#211c14;--cream:#f6f1e7;--paper:#fffdf8;
+    --gold:#a9772f;--gold2:#c89b4a;--soft:#f1e8d6;
+    --line:#e8ddc8;--muted:#8a7f6b;--green:#3f7d4f;
+    --serif:'Fraunces',Georgia,serif;
+    --sans:'Inter',system-ui,sans-serif;
+    --shadow:0 14px 40px rgba(33,28,20,.06);
+    --shadow-sm:0 8px 22px rgba(33,28,20,.05);
+  }
+  body{font-family:var(--sans);color:var(--ink);background:var(--cream);line-height:1.62;-webkit-font-smoothing:antialiased;padding:40px 20px;}
+  .doc{max-width:860px;margin:0 auto;}
+  .pill-label{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);background:var(--soft);border:1px solid var(--line);padding:7px 14px;border-radius:999px;}
+  .pill-label::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--gold);}
+
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow-sm);}
+  .block{margin-bottom:22px;}
+  .pad{padding:36px 40px;}
+
+  /* HEADER */
+  .header{background:var(--ink);color:#efe7d6;border-radius:24px;padding:40px 44px;box-shadow:0 22px 55px rgba(33,28,20,.2);display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:20px;position:relative;overflow:hidden;margin-bottom:22px;}
+  .header::after{content:"GS";position:absolute;right:-10px;bottom:-60px;font-family:var(--serif);font-size:200px;color:rgba(200,155,74,.08);line-height:1;}
+  .header .brand{font-family:var(--serif);font-size:24px;position:relative;}
+  .header .brand small{display:block;font-family:var(--sans);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#9c9180;margin-top:7px;}
+  .header .doc-meta{text-align:right;position:relative;}
+  .header .doc-meta .pl{display:inline-block;font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold2);background:rgba(200,155,74,.14);border:1px solid rgba(200,155,74,.28);padding:6px 13px;border-radius:999px;}
+  .header .doc-meta h1{font-family:var(--serif);font-size:30px;font-weight:400;margin:14px 0 4px;}
+  .header .doc-meta p{font-size:12px;color:#9c9180;}
+
+  .greeting h2{font-family:var(--serif);font-size:24px;font-weight:400;margin-bottom:14px;}
+  .greeting p{font-size:14.5px;color:#5a5142;line-height:1.85;margin-bottom:13px;}
+  .greeting p:last-child{margin-bottom:0;}
+  .greeting strong{color:var(--ink);}
+
+  .shead{display:flex;align-items:flex-start;gap:14px;margin-bottom:22px;}
+  .shead .pt{font-family:var(--serif);font-style:italic;font-size:34px;color:var(--gold2);line-height:.9;}
+  .shead h3{font-family:var(--serif);font-size:21px;font-weight:400;}
+  .shead p{font-size:12.5px;color:var(--muted);margin-top:4px;line-height:1.5;}
+
+  /* ROWS */
+  .rows .r{display:flex;justify-content:space-between;gap:20px;padding:20px 0;border-top:1px solid var(--line);align-items:flex-start;}
+  .rows .r:first-child{border-top:none;padding-top:0;}
+  .rows .r:last-child{padding-bottom:0;}
+  .rows .name{font-family:var(--serif);font-size:16.5px;}
+  .rows .desc{font-size:12.5px;color:#6a604e;line-height:1.6;margin-top:5px;max-width:460px;}
+  .rows .cost{text-align:right;white-space:nowrap;font-weight:600;font-size:14.5px;}
+  .rows .cost small{display:block;color:var(--muted);font-weight:400;font-size:11px;margin-top:3px;}
+  .svc-note{margin-top:24px;background:var(--soft);border-radius:14px;padding:18px 22px;font-size:13px;color:#5a5142;line-height:1.7;}
+  .svc-note strong{color:var(--ink);}
+
+  /* BUILD BREAKDOWN ROWS (no price) */
+  .work .r{display:grid;grid-template-columns:34px 1fr;gap:16px;padding:18px 0;border-top:1px solid var(--line);align-items:flex-start;}
+  .work .r:first-child{border-top:none;padding-top:0;}
+  .work .r:last-child{padding-bottom:0;}
+  .work .wn{font-family:var(--serif);font-size:17px;color:var(--gold2);line-height:1.2;}
+  .work .name{font-family:var(--serif);font-size:16.5px;}
+  .work .desc{font-size:12.5px;color:#6a604e;line-height:1.6;margin-top:5px;}
+
+  /* FEE CARD */
+  .feecard{background:linear-gradient(140deg,#fff9ee,#fbf2df);border:1.5px solid var(--gold2);border-radius:24px;box-shadow:0 20px 50px rgba(169,119,47,.13);padding:40px 44px;margin-bottom:22px;}
+  .fee-top{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;}
+  .fee-top .l .pill-label{background:#fff;}
+  .fee-top .l h3{font-family:var(--serif);font-size:26px;font-weight:400;margin:14px 0 6px;}
+  .fee-top .l p{font-size:13px;color:#6a604e;max-width:400px;line-height:1.6;}
+  .fee-top .price{text-align:right;}
+  .fee-top .price .amt{font-family:var(--serif);font-size:62px;font-weight:400;line-height:.9;color:var(--ink);}
+  .fee-top .price span{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-top:10px;}
+  .maint{margin-top:28px;background:var(--ink);color:#efe7d6;border-radius:16px;padding:24px 26px;}
+  .maint .topline{display:flex;align-items:center;gap:14px;}
+  .maint .em{font-size:24px;}
+  .maint .mtag{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold2);}
+  .maint h4{font-family:var(--serif);font-size:18px;font-weight:400;margin-top:3px;}
+  .maint ul{list-style:none;margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:9px 26px;}
+  .maint li{font-size:12.5px;color:#cabfa9;display:flex;gap:9px;line-height:1.5;}
+  .maint li::before{content:"\2713";color:var(--gold2);flex-shrink:0;}
+  .value-note{margin-top:22px;font-size:12.5px;color:var(--muted);font-style:italic;text-align:center;}
+
+  /* BOTTOM LINE */
+  .bl{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:22px;}
+  .blcard{border-radius:22px;padding:32px 34px;box-shadow:var(--shadow-sm);}
+  .blcard.one{background:var(--ink);color:#efe7d6;}
+  .blcard.two{background:var(--paper);border:1px solid var(--line);}
+  .blcard span{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;}
+  .blcard.one span{color:var(--gold2);}
+  .blcard.two span{color:var(--muted);}
+  .blcard .big{font-family:var(--serif);font-size:42px;font-weight:400;margin:12px 0 8px;line-height:1;}
+  .blcard .big small{font-size:16px;font-family:var(--sans);}
+  .blcard.one .big small{color:#9c9180;}
+  .blcard.two .big small{color:var(--muted);}
+  .blcard p{font-size:12.5px;line-height:1.6;}
+  .blcard.one p{color:#a89d89;}
+  .blcard.two p{color:#6a604e;}
+
+  /* INCLUDED / EXCLUDED */
+  .twogrid{display:grid;grid-template-columns:1fr 1fr;gap:36px;}
+  .twogrid h4{font-family:var(--serif);font-size:17px;font-weight:400;margin-bottom:14px;}
+  .twogrid ul{list-style:none;}
+  .twogrid li{font-size:13px;color:#5a5142;padding:8px 0;display:flex;gap:10px;line-height:1.5;}
+  .twogrid .inc li::before{content:"\2713";color:var(--green);font-weight:600;flex-shrink:0;}
+  .twogrid .exc li::before{content:"–";color:var(--muted);flex-shrink:0;}
+
+  /* ADDONS */
+  .addons{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px;}
+  .addon{background:var(--soft);border:1px solid var(--line);border-radius:16px;padding:22px 24px;}
+  .addon .top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;}
+  .addon h4{font-family:var(--serif);font-size:16px;font-weight:400;}
+  .addon .price{font-size:13px;font-weight:600;color:var(--gold);white-space:nowrap;}
+  .addon p{font-size:12.5px;color:#6a604e;line-height:1.6;margin-top:7px;}
+
+  /* MILESTONES */
+  .stepper{display:flex;gap:0;margin-top:8px;flex-wrap:wrap;}
+  .ms{flex:1;min-width:240px;background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:26px 28px;}
+  .ms + .ms{margin-left:18px;}
+  .ms .pct{display:inline-flex;align-items:center;justify-content:center;width:54px;height:54px;border-radius:50%;background:var(--soft);border:1.5px solid var(--gold);color:var(--gold);font-family:var(--serif);font-size:18px;margin-bottom:14px;}
+  .ms h4{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;}
+  .ms p{font-size:12.5px;color:#6a604e;line-height:1.6;}
+  .ms .amt{margin-top:12px;font-family:var(--serif);font-size:24px;}
+
+  /* TERMS */
+  .terms{display:grid;grid-template-columns:repeat(2,1fr);gap:24px 36px;}
+  .terms div span{display:block;font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:7px;}
+  .terms div p{font-size:13px;color:#5a5142;line-height:1.6;}
+
+  .closing p{font-size:14.5px;color:#5a5142;line-height:1.85;margin-bottom:15px;}
+  .sign{margin-top:24px;padding-top:22px;border-top:1px solid var(--line);}
+  .sign .name{font-family:var(--serif);font-size:19px;}
+  .sign .role{font-size:12px;color:var(--muted);margin-top:3px;}
+
+  footer{text-align:center;padding:30px 0 10px;}
+  footer .fl{font-family:var(--serif);font-size:18px;}
+  footer p{font-size:11.5px;color:var(--muted);margin-top:6px;letter-spacing:.04em;}
+
+  @media(max-width:760px){
+    body{padding:0;}
+    .doc{max-width:none;}
+    .card,.feecard,.header{border-radius:0;}
+    .pad{padding:30px 24px;}
+    .header,.feecard{padding:30px 24px;}
+    .bl,.addons,.terms,.twogrid,.maint ul{grid-template-columns:1fr;}
+    .ms + .ms{margin-left:0;margin-top:16px;}
+    .fee-top .price{text-align:left;}
+    .header .doc-meta{text-align:left;}
+  }
+  @media print{body{background:#fff;padding:0;}.card,.header,.feecard{box-shadow:none;}.block{page-break-inside:avoid;}}
+</style>
+</head>
+<body>
+<div class="doc">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="brand">Golden Shadow Publishing<small>Website &amp; Platform Build</small></div>
+    <div class="doc-meta">
+      <span class="pl">Detailed Estimate</span>
+      <h1>Your Investment</h1>
+      <p>Prepared for the owner · Valid 30 days</p>
+    </div>
+  </div>
+
+  <!-- GREETING -->
+  <div class="card block greeting pad">
+    <h2>Hi there 👋</h2>
+    <p>Thank you for trusting me with Golden Shadow Publishing. It’s now a complete, working platform — a beautiful marketplace, a full studio back office, secure payments, member dashboards, and a private AI engine that runs your publishing pipeline.</p>
+    <p>This estimate lays everything out in detail and is split into two clear parts: <strong>(A) the services your platform runs on</strong>, with what each does and costs, and <strong>(B) my own fee for building it</strong> — kept very budget-friendly, delivered as one flat rate, and including two months of maintenance.</p>
+  </div>
+
+  <!-- PART A -->
+  <div class="card block pad">
+    <div class="shead">
+      <div class="pt">A</div>
+      <div><h3>The services your platform runs on</h3><p>Industry-standard tools the platform connects to. You own these accounts and pay the providers directly — I never mark them up.</p></div>
+    </div>
+    <div class="rows">
+      <div class="r">
+        <div><div class="name">Domain name</div><div class="desc">Your web address (e.g. goldenshadow.com) — what visitors type to reach you. Renewed once a year.</div></div>
+        <div class="cost">~$12 / year<small>one small yearly cost</small></div>
+      </div>
+      <div class="r">
+        <div><div class="name">Web hosting — Hostinger</div><div class="desc">A paid Hostinger plan (Cloud / VPS tier) that runs the application and serves it to visitors quickly and reliably, around the clock.</div></div>
+        <div class="cost">~$10 / month<small>billed yearly (~$120/yr)</small></div>
+      </div>
+      <div class="r">
+        <div><div class="name">Database &amp; accounts — Supabase Pro</div><div class="desc">Securely stores creators, applications, orders, member logins, and all AI-generated work, on the paid Pro plan for room to grow.</div></div>
+        <div class="cost">$25 / month</div>
+      </div>
+      <div class="r">
+        <div><div class="name">Payments — Stripe</div><div class="desc">Collects card payments and subscriptions safely. No monthly fee at all — Stripe simply takes a small percentage of each sale.</div></div>
+        <div class="cost">$0 / month<small>2.9% + 30¢ per sale</small></div>
+      </div>
+      <div class="r">
+        <div><div class="name">AI engine — Anthropic (Claude)</div><div class="desc">Powers the Studio Engine. You top up a prepaid credit and usage is drawn from it as the engine generates — you only pay for what’s used.</div></div>
+        <div class="cost">$100 / quarter<small>credit · covers ~3 months</small></div>
+      </div>
+      <div class="r">
+        <div><div class="name">Emails — Resend (paid)</div><div class="desc">Sends application alerts to your team and confirmations to applicants, reliably, on a paid plan that keeps messages out of spam.</div></div>
+        <div class="cost">$20 / month</div>
+      </div>
+    </div>
+    <div class="svc-note"><strong>In plain terms:</strong> plan for about <strong>$55 / month</strong> in fixed services (Hostinger + Supabase + email), plus a <strong>$100 Claude credit each quarter</strong> (~$33/mo of AI). All-in, that’s roughly <strong>$85–$90 a month</strong> to run, plus ~$12/year for your domain and Stripe’s small per-sale fee. You pay these providers directly.</div>
+  </div>
+
+  <!-- PART B — FEE CARD -->
+  <div class="feecard block">
+    <div class="fee-top">
+      <div class="l">
+        <span class="pill-label">Part B · My Fee</span>
+        <h3>Complete Platform Build</h3>
+        <p>Everything designed, built, tested, and ready to launch — delivered as one friendly flat rate.</p>
+      </div>
+      <div class="price"><div class="amt">$750</div><span>One-time · all-in</span></div>
+    </div>
+    <div class="maint">
+      <div class="topline"><span class="em">🛠️</span><div><div class="mtag">Included free</div><h4>2 months of maintenance after launch</h4></div></div>
+      <ul>
+        <li>Bug fixes &amp; adjustments</li>
+        <li>Small content &amp; copy tweaks</li>
+        <li>Help keeping services connected</li>
+        <li>Friendly support &amp; quick questions</li>
+      </ul>
+    </div>
+    <p class="value-note">A platform of this scope typically runs $15,000–$30,000+ with an agency. This is honest, hands-on workmanship at a fraction of that.</p>
+  </div>
+
+  <!-- WORK BREAKDOWN -->
+  <div class="card block pad">
+    <div class="shead">
+      <div class="pt">✦</div>
+      <div><h3>What that fee covers, in detail</h3><p>The complete build, broken down into the eight areas of work.</p></div>
+    </div>
+    <div class="work">
+      <div class="r"><div class="wn">01</div><div><div class="name">Brand &amp; Landing Page</div><div class="desc">The full editorial marketing site and a custom, reusable design system; responsive across every device.</div></div></div>
+      <div class="r"><div class="wn">02</div><div><div class="name">The Marketplace</div><div class="desc">Creator directory with live filtering, individual profile pages, twelve category pages, and an editorial journal.</div></div></div>
+      <div class="r"><div class="wn">03</div><div><div class="name">Applications &amp; Admin Dashboard</div><div class="desc">Creator &amp; Executive application forms, saved securely, plus a private admin area to review, filter, and approve or decline.</div></div></div>
+      <div class="r"><div class="wn">04</div><div><div class="name">Secure Payments</div><div class="desc">One-time &amp; subscription checkout via Stripe, with automatic order tracking in the admin Orders screen.</div></div></div>
+      <div class="r"><div class="wn">05</div><div><div class="name">Accounts &amp; Creator Dashboard</div><div class="desc">Secure sign-in with creator and admin roles, self-serve profile editing, and a revenue &amp; activity panel.</div></div></div>
+      <div class="r"><div class="wn">06</div><div><div class="name">The AI Studio Engine ✨</div><div class="desc">AI that turns raw material into a blueprint, book outline, live-drafted chapter, and product suite — with admin oversight.</div></div></div>
+      <div class="r"><div class="wn">07</div><div><div class="name">Design Polish &amp; Animations</div><div class="desc">Scroll effects, count-up statistics, micro-interactions, and accessibility refinements across the whole site.</div></div></div>
+      <div class="r"><div class="wn">08</div><div><div class="name">Launch Setup &amp; Guidance</div><div class="desc">Plain-English setup documents and hands-on help connecting your services so you can go live with confidence.</div></div></div>
+    </div>
+  </div>
+
+  <!-- BOTTOM LINE -->
+  <div class="bl">
+    <div class="blcard one">
+      <span>One-time · My work</span>
+      <div class="big">$750</div>
+      <p>The complete platform — built, tested &amp; including 2 months of maintenance.</p>
+    </div>
+    <div class="blcard two">
+      <span>Ongoing · Services</span>
+      <div class="big">~$85–90 <small>/ mo</small></div>
+      <p>Hosting, database, AI &amp; email — paid to providers directly, plus ~$12/yr domain.</p>
+    </div>
+  </div>
+
+  <!-- INCLUDED / EXCLUDED -->
+  <div class="card block pad">
+    <div class="shead">
+      <div class="pt">✓</div>
+      <div><h3>What’s included — and what’s not</h3><p>So there are no surprises on either side.</p></div>
+    </div>
+    <div class="twogrid">
+      <div class="inc">
+        <h4>Included in the $750</h4>
+        <ul>
+          <li>The complete build (all 8 areas above)</li>
+          <li>Fully responsive on every device</li>
+          <li>Two rounds of revisions per section</li>
+          <li>Clean, organized code you fully own</li>
+          <li>Plain-English setup &amp; launch documents</li>
+          <li>A walkthrough call at go-live</li>
+          <li>2 months of post-launch maintenance</li>
+        </ul>
+      </div>
+      <div class="exc">
+        <h4>Not included (optional / yours)</h4>
+        <ul>
+          <li>The monthly service costs in Part A</li>
+          <li>Your domain purchase &amp; final content</li>
+          <li>Logo or brand-identity design</li>
+          <li>Ongoing care after the 2 free months</li>
+          <li>New features beyond the scope above</li>
+          <li>Third-party fees (e.g. Stripe per-sale)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD-ONS -->
+  <div class="card block pad">
+    <div class="shead">
+      <div class="pt">+</div>
+      <div><h3>Optional add-ons</h3><p>Only if you want them — nothing here is required to launch.</p></div>
+    </div>
+    <div class="addons">
+      <div class="addon"><div class="top"><h4>Care Plan</h4><span class="price">$90 / mo</span></div><p>After your 2 free months — updates, security patches, small tweaks &amp; priority support. Cancel anytime.</p></div>
+      <div class="addon"><div class="top"><h4>Content Loading</h4><span class="price">$150</span></div><p>I’ll load your real creators, copy, and images so you launch fully populated, not with placeholders.</p></div>
+      <div class="addon"><div class="top"><h4>Email Notifications Setup</h4><span class="price">$150</span></div><p>Wire up automatic team alerts on each new application, plus polished applicant confirmation emails.</p></div>
+      <div class="addon"><div class="top"><h4>Training Session</h4><span class="price">$90</span></div><p>A relaxed 1-hour screen-share showing you and your team how to run everything day to day.</p></div>
+    </div>
+  </div>
+
+  <!-- MILESTONES -->
+  <div class="card block pad">
+    <div class="shead">
+      <div class="pt">$</div>
+      <div><h3>Payment for my fee</h3><p>Simple and fair, split in two — no pressure.</p></div>
+    </div>
+    <div class="stepper">
+      <div class="ms"><div class="pct">50%</div><h4>To Begin</h4><p>Confirms the project and reserves the work to start.</p><div class="amt">$375</div></div>
+      <div class="ms"><div class="pct">50%</div><h4>At Launch</h4><p>Due when everything is live and you’re happy with it.</p><div class="amt">$375</div></div>
+    </div>
+  </div>
+
+  <!-- TERMS -->
+  <div class="card block pad">
+    <div class="shead">
+      <div class="pt">§</div>
+      <div><h3>The details</h3><p>Clear, friendly terms.</p></div>
+    </div>
+    <div class="terms">
+      <div><span>Timeline</span><p>The core build is delivered. Once your service accounts are connected, the platform can go fully live within a few days.</p></div>
+      <div><span>Revisions</span><p>Two rounds of revisions per section are included. Larger new features can be quoted separately as add-ons.</p></div>
+      <div><span>Ownership</span><p>On final payment, the code and everything built is 100% yours. Your service accounts are in your name from day one.</p></div>
+      <div><span>Currency &amp; Validity</span><p>All figures are in USD. This estimate is valid for 30 days from the date of issue.</p></div>
+      <div><span>What I Need From You</span><p>The service accounts listed in Part A (I’ll guide you through each) and your final content and imagery.</p></div>
+      <div><span>Support</span><p>Two months of maintenance are included after launch; an optional Care Plan continues support beyond that.</p></div>
+    </div>
+  </div>
+
+  <!-- CLOSING -->
+  <div class="card block closing pad">
+    <p>I genuinely loved building this, and I want it to succeed for you. The $750 fee is kept deliberately budget-friendly — and if you ever need to spread it out further, just say the word and we’ll make it comfortable.</p>
+    <p>Whenever you’re ready, a quick reply is all it takes to get going. 🙌</p>
+    <div class="sign">
+      <div class="name">With appreciation,</div>
+      <div class="role">Your developer &amp; design partner</div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="fl">Golden Shadow Publishing</div>
+    <p>Detailed Estimate · Thank you for the opportunity</p>
+  </footer>
+
+</div>
+</body>
+</html>
