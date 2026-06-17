@@ -94,14 +94,21 @@ export default async function DashboardPage() {
           subtitle="Manage your profile, track your IP, and see your revenue at a glance."
         />
         <section className="page-section">
-          <div className="admin-bar">
-            <p className="result-count" style={{ margin: 0 }}>
-              Signed in as {session.email}
-              {isAdmin(session)
-                ? " · admin"
-                : ` · ${PLAN_LABEL[session.profile?.plan ?? "none"] ?? "No plan"}`}
-            </p>
-            <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+          <div className="account-bar">
+            <div>
+              <p className="account-hello">Signed in as</p>
+              <p className="account-email">{session.email}</p>
+            </div>
+            <div className="account-right">
+              {isAdmin(session) ? (
+                <span className="plan-badge plan-platform">Admin</span>
+              ) : (
+                <span
+                  className={`plan-badge plan-${session.profile?.plan ?? "none"}`}
+                >
+                  {PLAN_LABEL[session.profile?.plan ?? "none"] ?? "No plan"}
+                </span>
+              )}
               {isAdmin(session) && (
                 <Link href="/admin" className="admin-signout">
                   Admin →

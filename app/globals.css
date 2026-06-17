@@ -2551,6 +2551,202 @@ html[data-scrolled] nav {
   border-color: var(--black);
 }
 
+/* ══════════════════════════════════════════════════════════
+   ADMIN & DASHBOARD — DESIGN POLISH
+   ══════════════════════════════════════════════════════════ */
+
+/* Toolbar row (nav + sign out) */
+.admin-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* Segmented tab bar (admin nav + sub-filters) */
+.admin-tabs {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  background: var(--g100);
+  border: 1px solid var(--g300);
+  padding: 4px;
+}
+.admin-tabs .filter-chip {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--g700);
+  padding: 9px 16px;
+  font-size: 11px;
+  letter-spacing: 0.09em;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease;
+}
+.admin-tabs .filter-chip:hover {
+  background: var(--white);
+  color: var(--black);
+  border-color: var(--g300);
+}
+.admin-tabs .filter-chip.active {
+  background: var(--black);
+  color: var(--white);
+  border-color: var(--black);
+}
+.admin-signout {
+  transition: color 0.2s;
+}
+
+/* Tables — cleaner, with row hover */
+.app-table {
+  border: 1px solid var(--g300);
+}
+.app-table thead th {
+  background: var(--g100);
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  color: var(--g500);
+  padding: 15px 18px;
+}
+.app-table tbody td {
+  padding: 18px;
+  transition: background 0.15s ease;
+}
+.app-table tbody tr {
+  transition: background 0.15s ease;
+}
+.app-table tbody tr:hover td {
+  background: #fcfbf9;
+}
+.app-name {
+  font-size: 16px;
+  line-height: 1.3;
+}
+.app-email {
+  margin-top: 2px;
+}
+
+/* Status pills — softer, rounded */
+.status-pill,
+.badge-type {
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-weight: 600;
+}
+
+/* Metric cards — refined */
+.metric-card {
+  padding: 30px 28px;
+  position: relative;
+}
+.metric-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 28px;
+  height: 2px;
+  background: var(--black);
+}
+.metric-value {
+  font-size: 38px;
+  letter-spacing: -0.01em;
+}
+.metric-card small {
+  color: var(--g500);
+}
+
+/* Insight cards — match metric refinement */
+.insight-card {
+  position: relative;
+  padding: 30px 28px;
+}
+.insight-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 28px;
+  height: 2px;
+  background: var(--gold, var(--black));
+  background: var(--black);
+}
+
+/* Dashboard account header */
+.account-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  background: var(--g100);
+  border: 1px solid var(--g300);
+  padding: 22px 28px;
+}
+.account-bar .account-hello {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--g500);
+  margin-bottom: 5px;
+}
+.account-bar .account-email {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 400;
+}
+.account-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.account-right .admin-signout {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--g500);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.account-right .admin-signout:hover {
+  color: var(--black);
+}
+
+/* Plan badge */
+.plan-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 7px 14px;
+  border: 1px solid var(--g300);
+  white-space: nowrap;
+}
+.plan-badge.plan-none {
+  color: var(--g500);
+}
+.plan-badge.plan-starter {
+  background: var(--g100);
+  color: var(--black);
+}
+.plan-badge.plan-studio,
+.plan-badge.plan-platform {
+  background: var(--black);
+  color: var(--white);
+  border-color: var(--black);
+}
+
+/* Empty states — a touch more presence in admin */
+.page-section > .empty-state {
+  border-radius: 0;
+}
+
 /* ── RESPONSIVE ──────────────────────────────────────────── */
 @media (max-width: 1024px) {
   nav {
