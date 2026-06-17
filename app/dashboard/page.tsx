@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { getSession, isAdmin, canUseStudio, PLAN_LABEL } from "@/lib/auth";
 import { getCreatorBySlug } from "@/lib/creators-db";
+import { toChapterSet } from "@/lib/anthropic/types";
 import { signOut } from "./actions";
 
 export const metadata: Metadata = {
@@ -79,6 +80,38 @@ export default async function DashboardPage() {
   const totalCents = orders.reduce((sum, o) => sum + (o.amount_total ?? 0), 0);
   const hasSubscription = orders.some((o) => o.mode === "subscription");
 
+  // Book project progress — derived from the member's AI artifacts.
+  const { data: artifactData } = await supabase
+    .from("ai_artifacts")
+    .select("kind, content, review_status")
+    .eq("user_id", session.userId);
+  const artifacts = (artifactData ?? []) as {
+    kind: string;
+    content: unknown;
+    review_status: string | null;
+  }[];
+  const kinds = new Set(artifacts.map((a) => a.kind));
+  const chapterRow = artifacts.find((a) => a.kind === "chapter");
+  const chapterCount = chapterRow
+    ? toChapterSet(chapterRow.content).chapters.length
+    : 0;
+  const approvedCount = artifacts.filter(
+    (a) => a.review_status === "approved"
+  ).length;
+  const projectSteps = [
+    { label: "Source material", done: kinds.has("source") },
+    { label: "IP Blueprint", done: kinds.has("blueprint") },
+    { label: "Book Architecture", done: kinds.has("architecture") },
+    {
+      label:
+        chapterCount > 0 ? `Chapters drafted (${chapterCount})` : "Chapters",
+      done: chapterCount > 0,
+    },
+    { label: "Product Suite", done: kinds.has("product_suite") },
+  ];
+  const stepsDone = projectSteps.filter((s) => s.done).length;
+  const hasProject = artifacts.length > 0;
+
   const firstName =
     session.profile?.full_name?.split(" ")[0] ??
     creator?.name?.split(" ")[0] ??
@@ -109,6 +142,9 @@ export default async function DashboardPage() {
                   {PLAN_LABEL[session.profile?.plan ?? "none"] ?? "No plan"}
                 </span>
               )}
+              <Link href="/dashboard/settings" className="admin-signout">
+                Settings
+              </Link>
               {isAdmin(session) && (
                 <Link href="/admin" className="admin-signout">
                   Admin →
@@ -150,6 +186,38 @@ export default async function DashboardPage() {
               <small>IP projects</small>
             </div>
           </div>
+
+          {/* Book project progress */}
+          {hasProject && (
+            <>
+              <p className="profile-section-label" style={{ marginTop: "56px" }}>
+                Your Book Project
+              </p>
+              <div className="project-tracker">
+                <div className="project-track-head">
+                  <span>
+                    {stepsDone} of {projectSteps.length} stages
+                  </span>
+                  {approvedCount > 0 && (
+                    <span className="status-pill status-approved">
+                      {approvedCount} studio-approved
+                    </span>
+                  )}
+                </div>
+                <div className="project-steps">
+                  {projectSteps.map((s, i) => (
+                    <div
+                      className={`project-step${s.done ? " done" : ""}`}
+                      key={i}
+                    >
+                      <span className="ps-dot">{s.done ? "✓" : i + 1}</span>
+                      <span className="ps-label">{s.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
 
           {/* Studio Engine */}
           <p className="profile-section-label" style={{ marginTop: "56px" }}>
