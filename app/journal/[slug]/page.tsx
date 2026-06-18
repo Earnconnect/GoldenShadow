@@ -3,7 +3,11 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
-import { getPostBySlug, getAllJournalSlugs } from "@/lib/journal-db";
+import {
+  getPostBySlug,
+  getAllJournalSlugs,
+  getPublishedPosts,
+} from "@/lib/journal-db";
 
 export const revalidate = 60;
 
@@ -33,6 +37,15 @@ export default async function JournalArticlePage({
   const { slug } = await params;
   const post = await getPostBySlug(slug);
   if (!post) notFound();
+
+  // Related: same tag first, then recent — up to 3, excluding this one.
+  const all = await getPublishedPosts();
+  const others = all.filter((p) => p.slug !== slug);
+  const sameTag = others.filter((p) => post.tag && p.tag === post.tag);
+  const related = [...sameTag, ...others.filter((p) => !sameTag.includes(p))].slice(
+    0,
+    3
+  );
 
   return (
     <>
@@ -68,6 +81,26 @@ export default async function JournalArticlePage({
             ← Back to Journal
           </Link>
         </article>
+
+        {related.length > 0 && (
+          <section className="page-section related-section">
+            <p className="profile-section-label">More from the Journal</p>
+            <div className="j-grid">
+              {related.map((p) => (
+                <div className="j-card" key={p.slug}>
+                  <p className="j-tag">
+                    {p.tag} · {p.readTime}
+                  </p>
+                  <h3>{p.title}</h3>
+                  <p>{p.excerpt}</p>
+                  <Link href={`/journal/${p.slug}`} className="jlink">
+                    Read article →
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
       </main>
       <Footer />
     </>

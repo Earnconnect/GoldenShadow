@@ -2747,6 +2747,38 @@ html[data-scrolled] nav {
   border-radius: 0;
 }
 
+/* Journal — search + tag filtering */
+.journal-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 44px;
+}
+.journal-search {
+  flex: 1;
+  min-width: 240px;
+  max-width: 360px;
+  font-family: var(--sans);
+  font-size: 14px;
+  border: none;
+  border-bottom: 1px solid var(--g300);
+  background: transparent;
+  padding: 12px 4px;
+}
+.journal-search:focus {
+  outline: none;
+  border-bottom-color: var(--black);
+}
+.journal-controls .filter-bar {
+  margin: 0;
+}
+.related-section {
+  border-top: 1px solid var(--g200);
+  margin-top: 24px;
+}
+
 /* Book project progress tracker */
 .project-tracker {
   border: 1px solid var(--g300);

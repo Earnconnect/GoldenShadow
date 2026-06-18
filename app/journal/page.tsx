@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import PageHeader from "@/components/PageHeader";
 import Reveal from "@/components/Reveal";
+import JournalBrowser from "@/components/JournalBrowser";
 import { getPublishedPosts } from "@/lib/journal-db";
 
 export const metadata: Metadata = {
@@ -34,20 +34,7 @@ export default async function JournalPage() {
         />
         <Reveal>
           <section className="page-section">
-            <div className="j-grid">
-              {journalPosts.map((post) => (
-                <div className="j-card" key={post.slug}>
-                  <p className="j-tag">
-                    {post.tag} · {post.readTime}
-                  </p>
-                  <h3>{post.title}</h3>
-                  <p>{post.excerpt}</p>
-                  <Link href={`/journal/${post.slug}`} className="jlink">
-                    Read article →
-                  </Link>
-                </div>
-              ))}
-            </div>
+            <JournalBrowser posts={journalPosts} />
           </section>
         </Reveal>
       </main>

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import HeroStats from "@/components/HeroStats";
 import { getSettings } from "@/lib/settings";
 
@@ -17,12 +18,12 @@ export default async function Hero() {
         </h1>
         <p className="hero-sub">{settings.heroSubtitle}</p>
         <div className="hero-actions">
-          <a href="#cta" className="btn-dark">
+          <Link href="/apply" className="btn-dark">
             Apply as a Creator
-          </a>
-          <a href="#cta" className="btn-outline">
+          </Link>
+          <Link href="/apply" className="btn-outline">
             Partner as an Executive
-          </a>
+          </Link>
         </div>
         <p className="hero-micro">
           We partner with a curated number of creators and leaders each year.
