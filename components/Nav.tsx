@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { navLinks } from "@/lib/data";
+import NavAuth from "@/components/NavAuth";
 
 export default function Nav() {
   return (
@@ -14,14 +15,7 @@ export default function Nav() {
           </li>
         ))}
       </ul>
-      <div className="nav-right">
-        <Link className="nav-sign" href="/login">
-          Log In
-        </Link>
-        <Link className="btn-dark" href="/apply">
-          Apply Now
-        </Link>
-      </div>
+      <NavAuth />
     </nav>
   );
 }
