@@ -269,6 +269,9 @@ create table if not exists public.journal_posts (
 
 create index if not exists journal_published_idx on public.journal_posts (published, created_at desc);
 
+-- Phase 10: optional cover image (admin pastes an image URL).
+alter table public.journal_posts add column if not exists cover_url text;
+
 alter table public.journal_posts enable row level security;
 
 drop policy if exists "public read published posts" on public.journal_posts;

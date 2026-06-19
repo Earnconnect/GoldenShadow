@@ -83,6 +83,12 @@ export default async function AdminJournalPage() {
               <textarea id="excerpt" name="excerpt" rows={2} maxLength={400} />
             </div>
             <div className="form-field">
+              <label className="form-label" htmlFor="cover_url">
+                Cover image URL <span className="label-hint">(optional)</span>
+              </label>
+              <input id="cover_url" name="cover_url" type="url" placeholder="https://…/image.jpg" maxLength={400} />
+            </div>
+            <div className="form-field">
               <label className="form-label" htmlFor="body">
                 Body <span className="label-hint">(blank line between paragraphs)</span>
               </label>

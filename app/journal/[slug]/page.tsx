@@ -74,6 +74,12 @@ export default async function JournalArticlePage({
             <span>{post.date}</span>
             <span>{post.readTime}</span>
           </div>
+          {post.coverUrl && (
+            <div className="article-cover">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={post.coverUrl} alt="" />
+            </div>
+          )}
           {post.body.map((para, i) => (
             <p key={i}>{para}</p>
           ))}
@@ -88,6 +94,12 @@ export default async function JournalArticlePage({
             <div className="j-grid">
               {related.map((p) => (
                 <div className="j-card" key={p.slug}>
+                  {p.coverUrl && (
+                    <Link href={`/journal/${p.slug}`} className="j-cover">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={p.coverUrl} alt="" loading="lazy" />
+                    </Link>
+                  )}
                   <p className="j-tag">
                     {p.tag} · {p.readTime}
                   </p>

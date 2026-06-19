@@ -2779,6 +2779,39 @@ html[data-scrolled] nav {
   margin-top: 24px;
 }
 
+/* Journal cover images */
+.j-cover {
+  display: block;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  margin-bottom: 22px;
+  border: 1px solid var(--g300);
+  background: var(--g100);
+}
+.j-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
+}
+.j-card:hover .j-cover img {
+  transform: scale(1.04);
+}
+.article-cover {
+  margin: 10px 0 40px;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid var(--g300);
+  background: var(--g100);
+}
+.article-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 /* Book project progress tracker */
 .project-tracker {
   border: 1px solid var(--g300);

@@ -57,6 +57,7 @@ export async function createPost(formData: FormData) {
     body: parseBody(String(formData.get("body") ?? "")),
     date: String(formData.get("date") ?? "").trim() || null,
     read_time: String(formData.get("read_time") ?? "").trim() || null,
+    cover_url: String(formData.get("cover_url") ?? "").trim() || null,
     published: formData.get("published") === "on",
   });
 
@@ -81,6 +82,7 @@ export async function updatePost(formData: FormData) {
       body: parseBody(String(formData.get("body") ?? "")),
       date: String(formData.get("date") ?? "").trim() || null,
       read_time: String(formData.get("read_time") ?? "").trim() || null,
+      cover_url: String(formData.get("cover_url") ?? "").trim() || null,
       published: formData.get("published") === "on",
       updated_at: new Date().toISOString(),
     })

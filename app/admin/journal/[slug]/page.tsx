@@ -25,6 +25,7 @@ type PostRow = {
   body: string[] | null;
   date: string | null;
   read_time: string | null;
+  cover_url: string | null;
   published: boolean;
 };
 
@@ -74,6 +75,12 @@ export default async function EditJournalPage({
             <div className="form-field">
               <label className="form-label" htmlFor="excerpt">Excerpt</label>
               <textarea id="excerpt" name="excerpt" rows={2} defaultValue={post.excerpt ?? ""} maxLength={400} />
+            </div>
+            <div className="form-field">
+              <label className="form-label" htmlFor="cover_url">
+                Cover image URL <span className="label-hint">(optional)</span>
+              </label>
+              <input id="cover_url" name="cover_url" type="url" defaultValue={post.cover_url ?? ""} placeholder="https://…/image.jpg" maxLength={400} />
             </div>
             <div className="form-field">
               <label className="form-label" htmlFor="body">

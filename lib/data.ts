@@ -61,6 +61,7 @@ export type JournalPost = {
   date: string;
   readTime: string;
   body: string[];
+  coverUrl?: string;
 };
 
 export type BrowseTile = {

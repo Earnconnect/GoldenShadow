@@ -68,6 +68,12 @@ export default function JournalBrowser({ posts }: { posts: JournalPost[] }) {
         <div className="j-grid">
           {filtered.map((post) => (
             <div className="j-card" key={post.slug}>
+              {post.coverUrl && (
+                <Link href={`/journal/${post.slug}`} className="j-cover">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={post.coverUrl} alt="" loading="lazy" />
+                </Link>
+              )}
               <p className="j-tag">
                 {post.tag} · {post.readTime}
               </p>

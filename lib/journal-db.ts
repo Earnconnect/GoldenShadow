@@ -14,6 +14,7 @@ type JournalRow = {
   date: string | null;
   read_time: string | null;
   published: boolean;
+  cover_url: string | null;
 };
 
 function rowToPost(r: JournalRow): JournalPost {
@@ -25,6 +26,7 @@ function rowToPost(r: JournalRow): JournalPost {
     date: r.date ?? "",
     readTime: r.read_time ?? "",
     body: r.body ?? [],
+    coverUrl: r.cover_url ?? undefined,
   };
 }
 
