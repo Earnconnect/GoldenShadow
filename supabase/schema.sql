@@ -332,6 +332,65 @@ create policy "creators update own inquiries"
   using (creator_slug is not null and creator_slug = public.my_creator_slug())
   with check (creator_slug is not null and creator_slug = public.my_creator_slug());
 
+-- ── In-platform messaging (Phase 10) ──────────────────────────
+-- An inquiry is a conversation thread started by a logged-in member.
+alter table public.inquiries
+  add column if not exists sender_user_id uuid references auth.users (id) on delete set null;
+
+-- Starting a thread requires login; the sender must be the authenticated user.
+-- (Replaces the old anonymous public-insert policy.)
+drop policy if exists "public submit inquiry" on public.inquiries;
+drop policy if exists "members submit inquiry" on public.inquiries;
+create policy "members submit inquiry"
+  on public.inquiries for insert to authenticated
+  with check (sender_user_id = auth.uid());
+
+-- The sender can read their own threads.
+drop policy if exists "senders read own inquiries" on public.inquiries;
+create policy "senders read own inquiries"
+  on public.inquiries for select to authenticated
+  using (sender_user_id = auth.uid());
+
+-- Messages within a thread.
+create table if not exists public.inquiry_messages (
+  id             uuid primary key default gen_random_uuid(),
+  inquiry_id     uuid not null references public.inquiries (id) on delete cascade,
+  created_at     timestamptz not null default now(),
+  sender_user_id uuid references auth.users (id) on delete set null,
+  sender_role    text not null, -- 'creator' | 'member'
+  body           text not null
+);
+
+create index if not exists inquiry_messages_thread_idx on public.inquiry_messages (inquiry_id, created_at);
+
+alter table public.inquiry_messages enable row level security;
+
+-- Participants (the thread's sender, the addressed creator, or an admin) read.
+drop policy if exists "participants read messages" on public.inquiry_messages;
+create policy "participants read messages"
+  on public.inquiry_messages for select to authenticated
+  using (exists (
+    select 1 from public.inquiries i
+    where i.id = inquiry_id
+      and (i.sender_user_id = auth.uid()
+        or (i.creator_slug is not null and i.creator_slug = public.my_creator_slug())
+        or public.is_admin())
+  ));
+
+-- A participant can post a message as themselves.
+drop policy if exists "participants post messages" on public.inquiry_messages;
+create policy "participants post messages"
+  on public.inquiry_messages for insert to authenticated
+  with check (
+    sender_user_id = auth.uid()
+    and exists (
+      select 1 from public.inquiries i
+      where i.id = inquiry_id
+        and (i.sender_user_id = auth.uid()
+          or (i.creator_slug is not null and i.creator_slug = public.my_creator_slug()))
+    )
+  );
+
 -- ── Site settings (Phase 10: no-code admin controls) ──────────
 -- Key/value pairs the studio edits in /admin/settings. Public read; admin
 -- writes go through the service-role client.

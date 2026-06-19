@@ -2817,6 +2817,81 @@ html[data-scrolled] nav {
   display: block;
 }
 
+/* In-platform conversations */
+.thread-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.thread-card {
+  border: 1px solid var(--g300);
+  padding: 22px 24px;
+}
+.thread-head {
+  margin-bottom: 16px;
+}
+.thread-log {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 340px;
+  overflow-y: auto;
+  padding-right: 4px;
+  margin-bottom: 18px;
+}
+.bubble {
+  max-width: 80%;
+  padding: 11px 15px;
+  font-size: 14px;
+  line-height: 1.5;
+  border: 1px solid var(--g300);
+}
+.bubble p {
+  margin: 0;
+}
+.bubble-at {
+  display: block;
+  margin-top: 6px;
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  opacity: 0.55;
+}
+.bubble-them {
+  align-self: flex-start;
+  background: var(--g100);
+}
+.bubble-me {
+  align-self: flex-end;
+  background: var(--black);
+  color: var(--white);
+  border-color: var(--black);
+}
+.bubble-me .bubble-at {
+  opacity: 0.7;
+}
+.thread-reply {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+.thread-reply textarea {
+  flex: 1;
+  font-family: var(--sans);
+  font-size: 14px;
+  color: var(--black);
+  background: var(--white);
+  border: 1px solid var(--g300);
+  padding: 10px 12px;
+  resize: vertical;
+}
+.thread-reply textarea:focus {
+  outline: none;
+  border-color: var(--black);
+}
+.thread-reply .btn-dark {
+  white-space: nowrap;
+}
+
 /* Book project progress tracker */
 .project-tracker {
   border: 1px solid var(--g300);

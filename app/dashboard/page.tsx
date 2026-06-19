@@ -8,18 +8,28 @@ import CreatorProfileEditor from "@/components/CreatorProfileEditor";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { getSession, isAdmin, canUseStudio, PLAN_LABEL } from "@/lib/auth";
-import { getCreatorBySlug } from "@/lib/creators-db";
+import { getCreatorBySlug, getAllCreators } from "@/lib/creators-db";
 import { toChapterSet } from "@/lib/anthropic/types";
-import { signOut, markInquiryHandled } from "./actions";
+import ConversationThread, {
+  type ThreadEntry,
+} from "@/components/ConversationThread";
+import { signOut } from "./actions";
 
-type InquiryRow = {
+type InqRow = {
   id: string;
   created_at: string;
+  creator_slug: string | null;
   name: string;
   email: string;
   company: string | null;
   message: string;
   status: string;
+};
+type MsgRow = {
+  inquiry_id: string;
+  sender_role: string;
+  body: string;
+  created_at: string;
 };
 
 export const metadata: Metadata = {
@@ -122,17 +132,55 @@ export default async function DashboardPage() {
   const stepsDone = projectSteps.filter((s) => s.done).length;
   const hasProject = artifacts.length > 0;
 
-  // Partnership requests addressed to this creator (RLS returns only their own).
-  let inquiries: InquiryRow[] = [];
+  // Conversation threads: received (as a creator) and sent (as a member).
+  let received: InqRow[] = [];
   if (slug) {
-    const { data: inqData } = await supabase
+    const { data } = await supabase
       .from("inquiries")
-      .select("id, created_at, name, email, company, message, status")
+      .select("*")
       .eq("creator_slug", slug)
       .order("created_at", { ascending: false });
-    inquiries = (inqData ?? []) as InquiryRow[];
+    received = (data ?? []) as InqRow[];
   }
-  const newInquiries = inquiries.filter((q) => q.status !== "handled").length;
+  const { data: sentData } = await supabase
+    .from("inquiries")
+    .select("*")
+    .eq("sender_user_id", session.userId)
+    .order("created_at", { ascending: false });
+  const sent = (sentData ?? []) as InqRow[];
+
+  // All messages for those threads, grouped.
+  const threadIds = [...received, ...sent].map((t) => t.id);
+  const msgsByThread = new Map<string, MsgRow[]>();
+  if (threadIds.length) {
+    const { data: msgs } = await supabase
+      .from("inquiry_messages")
+      .select("inquiry_id, sender_role, body, created_at")
+      .in("inquiry_id", threadIds)
+      .order("created_at", { ascending: true });
+    for (const m of (msgs ?? []) as MsgRow[]) {
+      const arr = msgsByThread.get(m.inquiry_id) ?? [];
+      arr.push(m);
+      msgsByThread.set(m.inquiry_id, arr);
+    }
+  }
+
+  // Resolve creator display names for the "My Conversations" side.
+  const creatorNameBySlug = new Map<string, string>();
+  if (sent.length) {
+    for (const c of await getAllCreators()) creatorNameBySlug.set(c.slug, c.name);
+  }
+
+  const entriesFor = (t: InqRow): ThreadEntry[] => [
+    { role: "member", body: t.message, at: t.created_at },
+    ...(msgsByThread.get(t.id) ?? []).map(
+      (m): ThreadEntry => ({
+        role: m.sender_role === "creator" ? "creator" : "member",
+        body: m.body,
+        at: m.created_at,
+      })
+    ),
+  ];
 
   const firstName =
     session.profile?.full_name?.split(" ")[0] ??
@@ -241,78 +289,55 @@ export default async function DashboardPage() {
             </>
           )}
 
-          {/* Partnership requests (creator inbox) */}
+          {/* Partnership requests — conversations addressed to this creator */}
           {slug && (
             <>
               <p className="profile-section-label" style={{ marginTop: "56px" }}>
-                Partnership Requests
-                {newInquiries > 0 && (
-                  <span className="status-pill status-pending" style={{ marginLeft: "12px" }}>
-                    {newInquiries} new
-                  </span>
-                )}
+                Partnership Requests{received.length > 0 && ` (${received.length})`}
               </p>
-              {inquiries.length === 0 ? (
+              {received.length === 0 ? (
                 <p className="form-fineprint">
-                  When brands, publishers, or partners reach out from your public
-                  profile, their messages land here for you to reply to directly.
+                  When members reach out from your public profile, the
+                  conversation appears here — reply without leaving the platform.
                 </p>
               ) : (
-                <div className="admin-scroll">
-                  <table className="app-table">
-                    <thead>
-                      <tr>
-                        <th>From</th>
-                        <th>Message</th>
-                        <th>Received</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {inquiries.map((q) => (
-                        <tr key={q.id}>
-                          <td>
-                            <div className="app-name">{q.name}</div>
-                            <div className="app-email">{q.email}</div>
-                            {q.company && <div className="app-email">{q.company}</div>}
-                          </td>
-                          <td style={{ maxWidth: "340px" }}>{q.message}</td>
-                          <td>
-                            {new Date(q.created_at).toLocaleDateString("en-US", {
-                              month: "short",
-                              day: "numeric",
-                              year: "numeric",
-                            })}
-                          </td>
-                          <td>
-                            <div className="row-actions">
-                              <a
-                                href={`mailto:${q.email}?subject=${encodeURIComponent(
-                                  "Re: your message via Golden Shadow"
-                                )}`}
-                                className="filter-chip"
-                              >
-                                Reply
-                              </a>
-                              <form action={markInquiryHandled}>
-                                <input type="hidden" name="id" value={q.id} />
-                                <input
-                                  type="hidden"
-                                  name="status"
-                                  value={q.status === "handled" ? "new" : "handled"}
-                                />
-                                <button type="submit">
-                                  {q.status === "handled" ? "Reopen" : "Mark handled"}
-                                </button>
-                              </form>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                <div className="thread-list">
+                  {received.map((t) => (
+                    <ConversationThread
+                      key={t.id}
+                      inquiryId={t.id}
+                      currentRole="creator"
+                      title={t.name}
+                      subtitle={t.company ? `${t.email} · ${t.company}` : t.email}
+                      entries={entriesFor(t)}
+                    />
+                  ))}
                 </div>
               )}
+            </>
+          )}
+
+          {/* My conversations — threads this member started */}
+          {sent.length > 0 && (
+            <>
+              <p className="profile-section-label" style={{ marginTop: "56px" }}>
+                My Conversations ({sent.length})
+              </p>
+              <div className="thread-list">
+                {sent.map((t) => (
+                  <ConversationThread
+                    key={t.id}
+                    inquiryId={t.id}
+                    currentRole="member"
+                    title={
+                      (t.creator_slug && creatorNameBySlug.get(t.creator_slug)) ||
+                      "Creator"
+                    }
+                    subtitle="Creator"
+                    entries={entriesFor(t)}
+                  />
+                ))}
+              </div>
             </>
           )}
 

@@ -96,6 +96,42 @@ export async function markInquiryHandled(formData: FormData) {
   revalidatePath("/dashboard");
 }
 
+// Post a reply into a conversation thread. RLS ("participants post messages")
+// guarantees the user is part of the thread; we just label the role.
+export async function postInquiryMessage(formData: FormData) {
+  if (!isSupabaseConfigured) return;
+  const session = await getSession();
+  if (!session) redirect("/login");
+
+  const inquiryId = String(formData.get("inquiry_id") ?? "");
+  const body = String(formData.get("body") ?? "").trim();
+  if (!inquiryId || body.length < 1) return;
+
+  const supabase = await createClient();
+
+  // RLS only lets a participant read the thread → tells us our role.
+  const { data: inq } = await supabase
+    .from("inquiries")
+    .select("creator_slug, sender_user_id")
+    .eq("id", inquiryId)
+    .maybeSingle();
+  if (!inq) return;
+
+  const isCreator =
+    !!inq.creator_slug && inq.creator_slug === session.profile?.creator_slug;
+  const role = isCreator ? "creator" : "member";
+
+  await supabase.from("inquiry_messages").insert({
+    inquiry_id: inquiryId,
+    sender_user_id: session.userId,
+    sender_role: role,
+    body: body.slice(0, 2000),
+  });
+  // Surface the new reply to the other party as "new".
+  await supabase.from("inquiries").update({ status: "new" }).eq("id", inquiryId);
+  revalidatePath("/dashboard");
+}
+
 export async function signOut() {
   if (isSupabaseConfigured) {
     const supabase = await createClient();
