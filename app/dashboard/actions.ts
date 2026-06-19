@@ -80,6 +80,22 @@ export async function saveProfile(
   };
 }
 
+// Creator marks one of their own inquiries handled/new. RLS ("creators update
+// own inquiries") guarantees they can only touch inquiries for their own slug.
+export async function markInquiryHandled(formData: FormData) {
+  if (!isSupabaseConfigured) return;
+  const session = await getSession();
+  if (!session) redirect("/login");
+
+  const id = String(formData.get("id") ?? "");
+  const status = String(formData.get("status") ?? "");
+  if (!id || !["new", "handled"].includes(status)) return;
+
+  const supabase = await createClient();
+  await supabase.from("inquiries").update({ status }).eq("id", id);
+  revalidatePath("/dashboard");
+}
+
 export async function signOut() {
   if (isSupabaseConfigured) {
     const supabase = await createClient();

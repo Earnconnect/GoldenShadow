@@ -10,7 +10,17 @@ import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { getSession, isAdmin, canUseStudio, PLAN_LABEL } from "@/lib/auth";
 import { getCreatorBySlug } from "@/lib/creators-db";
 import { toChapterSet } from "@/lib/anthropic/types";
-import { signOut } from "./actions";
+import { signOut, markInquiryHandled } from "./actions";
+
+type InquiryRow = {
+  id: string;
+  created_at: string;
+  name: string;
+  email: string;
+  company: string | null;
+  message: string;
+  status: string;
+};
 
 export const metadata: Metadata = {
   title: "Your Dashboard — Golden Shadow Publishing",
@@ -111,6 +121,18 @@ export default async function DashboardPage() {
   ];
   const stepsDone = projectSteps.filter((s) => s.done).length;
   const hasProject = artifacts.length > 0;
+
+  // Partnership requests addressed to this creator (RLS returns only their own).
+  let inquiries: InquiryRow[] = [];
+  if (slug) {
+    const { data: inqData } = await supabase
+      .from("inquiries")
+      .select("id, created_at, name, email, company, message, status")
+      .eq("creator_slug", slug)
+      .order("created_at", { ascending: false });
+    inquiries = (inqData ?? []) as InquiryRow[];
+  }
+  const newInquiries = inquiries.filter((q) => q.status !== "handled").length;
 
   const firstName =
     session.profile?.full_name?.split(" ")[0] ??
@@ -216,6 +238,81 @@ export default async function DashboardPage() {
                   ))}
                 </div>
               </div>
+            </>
+          )}
+
+          {/* Partnership requests (creator inbox) */}
+          {slug && (
+            <>
+              <p className="profile-section-label" style={{ marginTop: "56px" }}>
+                Partnership Requests
+                {newInquiries > 0 && (
+                  <span className="status-pill status-pending" style={{ marginLeft: "12px" }}>
+                    {newInquiries} new
+                  </span>
+                )}
+              </p>
+              {inquiries.length === 0 ? (
+                <p className="form-fineprint">
+                  When brands, publishers, or partners reach out from your public
+                  profile, their messages land here for you to reply to directly.
+                </p>
+              ) : (
+                <div className="admin-scroll">
+                  <table className="app-table">
+                    <thead>
+                      <tr>
+                        <th>From</th>
+                        <th>Message</th>
+                        <th>Received</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {inquiries.map((q) => (
+                        <tr key={q.id}>
+                          <td>
+                            <div className="app-name">{q.name}</div>
+                            <div className="app-email">{q.email}</div>
+                            {q.company && <div className="app-email">{q.company}</div>}
+                          </td>
+                          <td style={{ maxWidth: "340px" }}>{q.message}</td>
+                          <td>
+                            {new Date(q.created_at).toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            })}
+                          </td>
+                          <td>
+                            <div className="row-actions">
+                              <a
+                                href={`mailto:${q.email}?subject=${encodeURIComponent(
+                                  "Re: your message via Golden Shadow"
+                                )}`}
+                                className="filter-chip"
+                              >
+                                Reply
+                              </a>
+                              <form action={markInquiryHandled}>
+                                <input type="hidden" name="id" value={q.id} />
+                                <input
+                                  type="hidden"
+                                  name="status"
+                                  value={q.status === "handled" ? "new" : "handled"}
+                                />
+                                <button type="submit">
+                                  {q.status === "handled" ? "Reopen" : "Mark handled"}
+                                </button>
+                              </form>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </>
           )}
 

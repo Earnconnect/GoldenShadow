@@ -47,7 +47,7 @@ export async function submitInquiry(
       return { status: "error", message: "Something went wrong. Try again." };
     return {
       status: "success",
-      message: "Sent! The Golden Shadow team will be in touch.",
+      message: "Sent! Your message has been delivered — expect a reply by email.",
     };
   } catch {
     return { status: "error", message: "Unexpected error. Please try again." };

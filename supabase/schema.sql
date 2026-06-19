@@ -314,6 +314,24 @@ create policy "admins update inquiries"
   on public.inquiries for update to authenticated
   using (public.is_admin()) with check (public.is_admin());
 
+-- Phase 10: a creator handles inquiries addressed to their own profile.
+-- my_creator_slug() is SECURITY DEFINER (reads profiles without RLS recursion).
+create or replace function public.my_creator_slug()
+returns text language sql security definer set search_path = public stable as $$
+  select creator_slug from public.profiles where id = auth.uid();
+$$;
+
+drop policy if exists "creators read own inquiries" on public.inquiries;
+create policy "creators read own inquiries"
+  on public.inquiries for select to authenticated
+  using (creator_slug is not null and creator_slug = public.my_creator_slug());
+
+drop policy if exists "creators update own inquiries" on public.inquiries;
+create policy "creators update own inquiries"
+  on public.inquiries for update to authenticated
+  using (creator_slug is not null and creator_slug = public.my_creator_slug())
+  with check (creator_slug is not null and creator_slug = public.my_creator_slug());
+
 -- ── Site settings (Phase 10: no-code admin controls) ──────────
 -- Key/value pairs the studio edits in /admin/settings. Public read; admin
 -- writes go through the service-role client.
