@@ -74,13 +74,13 @@ export default async function CreatorProfilePage({
                   </span>
                 ))}
               </div>
-              <Link
-                href="/apply"
+              <a
+                href="#inquiry"
                 className="btn-dark"
                 style={{ width: "100%", textAlign: "center" }}
               >
-                Work With Golden Shadow
-              </Link>
+                Work with {creator.name}
+              </a>
             </aside>
 
             <div className="profile-main">
@@ -108,7 +108,11 @@ export default async function CreatorProfilePage({
         </section>
         </Reveal>
         <Reveal>
-          <section className="page-section" style={{ paddingTop: 0, maxWidth: "760px" }}>
+          <section
+            id="inquiry"
+            className="page-section"
+            style={{ paddingTop: 0, maxWidth: "760px" }}
+          >
             <InquiryForm creatorSlug={creator.slug} creatorName={creator.name} />
           </section>
         </Reveal>
