@@ -38,6 +38,7 @@
 html {
   scroll-behavior: smooth;
   font-size: 16px;
+  overflow-x: hidden;
 }
 
 body {
@@ -46,6 +47,15 @@ body {
   background: var(--white);
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  width: 100%;
+}
+
+/* Media never forces the page wider than the screen. */
+img,
+video,
+canvas {
+  max-width: 100%;
+  height: auto;
 }
 
 /* ── UTILITY ─────────────────────────────────────────────── */
@@ -3343,6 +3353,12 @@ html[data-scrolled] nav {
   .status-pill,
   .plan-badge {
     white-space: normal;
+  }
+  /* Flex inputs must be allowed to shrink below their min-width on phones. */
+  .studio-select,
+  .journal-search,
+  .invite-row input {
+    min-width: 0;
   }
 }
 
