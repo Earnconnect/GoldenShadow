@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { sendEmail, emailShell, studioInbox, siteUrl, esc } from "@/lib/email";
 
 export type ApplyState = {
   status: "idle" | "success" | "error" | "preview";
@@ -67,6 +68,26 @@ export async function submitApplication(
         message:
           "Something went wrong saving your application. Please try again.",
       };
+    }
+
+    // Notify the studio (best-effort).
+    const inbox = await studioInbox();
+    if (inbox) {
+      await sendEmail({
+        to: inbox,
+        replyTo: email,
+        subject: `New ${type} application — ${name}`,
+        html: emailShell(
+          "New application received",
+          `<p><strong>${esc(name)}</strong> (${esc(email)}) applied as a <strong>${esc(
+            type
+          )}</strong>.</p>${
+            category ? `<p>Category: ${esc(category)}</p>` : ""
+          }${tierInterest ? `<p>Interested in: ${esc(tierInterest)}</p>` : ""}
+          <p style="white-space:pre-wrap">${esc(message)}</p>`,
+          { label: "Review in admin", url: `${siteUrl()}/admin` }
+        ),
+      });
     }
 
     return {

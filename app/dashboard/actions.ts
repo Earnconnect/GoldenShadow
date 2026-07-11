@@ -3,9 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { getSession } from "@/lib/auth";
 import { getCreatorBySlug as getStaticCreatorBySlug } from "@/lib/data";
+import { sendEmail, emailShell, siteUrl, esc } from "@/lib/email";
 
 export type SaveState = {
   status: "idle" | "success" | "error";
@@ -129,6 +131,45 @@ export async function postInquiryMessage(formData: FormData) {
   });
   // Surface the new reply to the other party as "new".
   await supabase.from("inquiries").update({ status: "new" }).eq("id", inquiryId);
+
+  // Email the other participant (best-effort).
+  try {
+    const admin = createAdminClient();
+    if (admin) {
+      let otherUserId: string | null = null;
+      if (isCreator) {
+        otherUserId = inq.sender_user_id ?? null;
+      } else if (inq.creator_slug) {
+        const { data: cr } = await admin
+          .from("creators")
+          .select("user_id")
+          .eq("slug", inq.creator_slug)
+          .maybeSingle();
+        otherUserId = cr?.user_id ?? null;
+      }
+      if (otherUserId) {
+        const { data: u } = await admin.auth.admin.getUserById(otherUserId);
+        const to = u?.user?.email ?? null;
+        const fromName =
+          session.profile?.full_name || session.email || "Someone";
+        if (to)
+          await sendEmail({
+            to,
+            subject: `New message from ${fromName}`,
+            html: emailShell(
+              "You have a new message",
+              `<p><strong>${esc(fromName)}</strong> replied to your conversation:</p><p style="white-space:pre-wrap">${esc(
+                body.slice(0, 600)
+              )}</p>`,
+              { label: "Open conversation", url: `${siteUrl()}/dashboard` }
+            ),
+          });
+      }
+    }
+  } catch {
+    // best-effort
+  }
+
   revalidatePath("/dashboard");
 }
 

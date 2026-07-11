@@ -6,6 +6,7 @@ import {
   STRIPE_WEBHOOK_SECRET,
 } from "@/lib/stripe";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { sendEmail, emailShell, studioInbox, siteUrl, esc } from "@/lib/email";
 
 // Stripe needs the raw request body to verify the signature.
 export const dynamic = "force-dynamic";
@@ -74,6 +75,33 @@ export async function POST(request: NextRequest) {
         } catch {
           // ignore — admin can set the plan manually in /admin/users
         }
+      }
+
+      // Notify the studio of the payment (best-effort).
+      try {
+        const inbox = await studioInbox();
+        if (inbox) {
+          const amount =
+            session.amount_total != null
+              ? `${(session.amount_total / 100).toFixed(2)} ${(
+                  session.currency ?? ""
+                ).toUpperCase()}`
+              : "—";
+          await sendEmail({
+            to: inbox,
+            subject: `New payment — ${tier ?? "order"}`,
+            html: emailShell(
+              "New payment received",
+              `<p>A new ${esc(session.mode ?? "")} payment has come through.</p>
+               <p>Tier: <strong>${esc(tier ?? "—")}</strong><br>
+               Amount: <strong>${esc(amount)}</strong><br>
+               Customer: ${esc(email ?? "—")}</p>`,
+              { label: "View orders", url: `${siteUrl()}/admin/orders` }
+            ),
+          });
+        }
+      } catch {
+        // best-effort
       }
     }
     // If the admin client isn't configured, we still return 200 — the payment

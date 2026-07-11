@@ -1,8 +1,10 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { getSession } from "@/lib/auth";
+import { sendEmail, emailShell, studioInbox, siteUrl, esc } from "@/lib/email";
 
 export type InquiryState = {
   status: "idle" | "success" | "error" | "preview";
@@ -53,6 +55,50 @@ export async function submitInquiry(
     });
     if (error)
       return { status: "error", message: "Something went wrong. Try again." };
+
+    // Notify the creator (if they have an account) + the studio backstop.
+    try {
+      const admin = createAdminClient();
+      let creatorEmail: string | null = null;
+      if (admin && creatorSlug) {
+        const { data: cr } = await admin
+          .from("creators")
+          .select("user_id")
+          .eq("slug", creatorSlug)
+          .maybeSingle();
+        if (cr?.user_id) {
+          const { data: u } = await admin.auth.admin.getUserById(cr.user_id);
+          creatorEmail = u?.user?.email ?? null;
+        }
+      }
+      const inbox = await studioInbox();
+      const html = emailShell(
+        "New partnership request",
+        `<p><strong>${esc(name)}</strong>${
+          company ? ` (${esc(company)})` : ""
+        } wants to work with you:</p><p style="white-space:pre-wrap">${esc(
+          message
+        )}</p>`,
+        { label: "Open your conversations", url: `${siteUrl()}/dashboard` }
+      );
+      if (creatorEmail)
+        await sendEmail({
+          to: creatorEmail,
+          replyTo: email || undefined,
+          subject: `New partnership request from ${name}`,
+          html,
+        });
+      if (inbox && inbox !== creatorEmail)
+        await sendEmail({
+          to: inbox,
+          replyTo: email || undefined,
+          subject: `New inquiry for ${creatorSlug || "a creator"} — ${name}`,
+          html,
+        });
+    } catch {
+      // best-effort
+    }
+
     return {
       status: "success",
       message:
