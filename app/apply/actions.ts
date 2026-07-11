@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { sendEmail, emailShell, studioInbox, siteUrl, esc } from "@/lib/email";
+import { logActivity } from "@/lib/activity";
 
 export type ApplyState = {
   status: "idle" | "success" | "error" | "preview";
@@ -89,6 +90,12 @@ export async function submitApplication(
         ),
       });
     }
+
+    await logActivity({
+      action: "application.submitted",
+      actor: email,
+      detail: `${name} applied as ${type}`,
+    });
 
     return {
       status: "success",

@@ -9,6 +9,7 @@ import { getSession } from "@/lib/auth";
 import { getCreatorBySlug as getStaticCreatorBySlug } from "@/lib/data";
 import { getCreatorBySlug } from "@/lib/creators-db";
 import { sendEmail, emailShell, siteUrl, esc } from "@/lib/email";
+import { logActivity } from "@/lib/activity";
 
 export type SaveState = {
   status: "idle" | "success" | "error";
@@ -75,6 +76,14 @@ export async function saveProfile(
     return { status: "error", message: error.message };
   }
 
+  await logActivity({
+    action: "profile.updated",
+    userId: session.userId,
+    actor: name,
+    detail: `updated profile ${slug}`,
+    entity: slug,
+  });
+
   revalidatePath("/dashboard");
   revalidatePath(`/creators/${slug}`);
   return {
@@ -132,6 +141,14 @@ export async function postInquiryMessage(formData: FormData) {
   });
   // Surface the new reply to the other party as "new".
   await supabase.from("inquiries").update({ status: "new" }).eq("id", inquiryId);
+
+  await logActivity({
+    action: "message.sent",
+    userId: session.userId,
+    actor: session.profile?.full_name || session.email || "member",
+    detail: `replied in a conversation (as ${role})`,
+    entity: inquiryId,
+  });
 
   // Email the other participant (best-effort).
   try {
@@ -214,6 +231,14 @@ export async function saveAvatar(
     { onConflict: "slug" }
   );
   if (error) return { ok: false, message: error.message };
+
+  await logActivity({
+    action: "avatar.updated",
+    userId: session.userId,
+    actor: current?.name ?? slug,
+    detail: `updated profile photo (${slug})`,
+    entity: slug,
+  });
 
   revalidatePath("/dashboard");
   revalidatePath(`/creators/${slug}`);

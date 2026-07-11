@@ -5,6 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { getSession } from "@/lib/auth";
 import { sendEmail, emailShell, studioInbox, siteUrl, esc } from "@/lib/email";
+import { logActivity } from "@/lib/activity";
 
 export type InquiryState = {
   status: "idle" | "success" | "error" | "preview";
@@ -55,6 +56,14 @@ export async function submitInquiry(
     });
     if (error)
       return { status: "error", message: "Something went wrong. Try again." };
+
+    await logActivity({
+      action: "inquiry.sent",
+      userId: session.userId,
+      actor: name,
+      detail: `messaged ${creatorSlug || "a creator"}`,
+      entity: creatorSlug || null,
+    });
 
     // Notify the creator (if they have an account) + the studio backstop.
     try {

@@ -410,6 +410,29 @@ create policy "public read settings"
   on public.site_settings for select to anon, authenticated
   using (true);
 
+-- ── Activity log (Phase 10: admin audit feed) ─────────────────
+-- Records key user/admin actions. Written best-effort via the service-role
+-- client; only admins can read.
+create table if not exists public.activity_log (
+  id         uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  user_id    uuid references auth.users (id) on delete set null,
+  actor      text,          -- email or name label of who did it
+  action     text not null, -- e.g. 'application.submitted', 'inquiry.sent'
+  detail     text,          -- human-readable detail
+  entity     text           -- optional related slug/id
+);
+
+create index if not exists activity_log_created_idx on public.activity_log (created_at desc);
+
+alter table public.activity_log enable row level security;
+
+drop policy if exists "admins read activity" on public.activity_log;
+create policy "admins read activity"
+  on public.activity_log for select to authenticated
+  using (public.is_admin());
+-- (No insert policy: writes go through the service-role client.)
+
 -- ── Storage: creator avatars (Phase 10) ───────────────────────
 -- Public bucket for profile photos. Anyone can view; a signed-in user can only
 -- write inside their own folder (avatars/<user_id>/…).

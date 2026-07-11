@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { sendEmail, emailShell, siteUrl, esc } from "@/lib/email";
+import { logActivity } from "@/lib/activity";
 
 export async function updateApplicationStatus(formData: FormData) {
   if (!isSupabaseConfigured) return;
@@ -33,6 +34,13 @@ export async function updateApplicationStatus(formData: FormData) {
     .from("applications")
     .update({ status, reviewed_at: new Date().toISOString() })
     .eq("id", id);
+
+  await logActivity({
+    action: `application.${status}`,
+    actor: user.email ?? "admin",
+    detail: `${app?.name ?? "applicant"} → ${status}`,
+    entity: id,
+  });
 
   // Approval → invite them to self-register (set their own password).
   if (app?.email && status === "approved") {

@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { getSession, canUseStudio } from "@/lib/auth";
+import { logActivity } from "@/lib/activity";
 import {
   generateIPBlueprint,
   generateBookArchitecture,
@@ -162,6 +163,14 @@ async function runStage(
     title,
     content: result.content,
     model: result.model,
+  });
+
+  await logActivity({
+    action: "studio.generate",
+    userId: session.userId,
+    actor: session.profile?.full_name || session.email || "member",
+    detail: `generated ${title}`,
+    entity: session.profile?.creator_slug ?? null,
   });
 
   revalidatePath("/dashboard/studio");

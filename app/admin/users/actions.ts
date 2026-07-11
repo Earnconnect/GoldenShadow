@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { getSession, isAdmin } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { logActivity } from "@/lib/activity";
 
 async function requireAdminClient() {
   if (!isSupabaseConfigured) return null;
@@ -34,6 +35,13 @@ export async function updateUser(formData: FormData) {
       creator_slug: creatorSlug || null,
     })
     .eq("id", id);
+
+  await logActivity({
+    action: "user.updated",
+    actor: "admin",
+    detail: `set role=${role}, plan=${plan}${creatorSlug ? `, creator=${creatorSlug}` : ""}`,
+    entity: id,
+  });
 
   revalidatePath("/admin/users");
 }

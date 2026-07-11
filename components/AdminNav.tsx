@@ -9,6 +9,7 @@ const TABS: { href: string; key: string; label: string }[] = [
   { href: "/admin/journal", key: "journal", label: "Journal" },
   { href: "/admin/creators", key: "creators", label: "Creators" },
   { href: "/admin/users", key: "users", label: "Users" },
+  { href: "/admin/activity", key: "activity", label: "Activity" },
   { href: "/admin/insights", key: "insights", label: "Insights" },
   { href: "/admin/settings", key: "settings", label: "Settings" },
 ];
@@ -21,6 +22,7 @@ export type AdminTab =
   | "journal"
   | "creators"
   | "users"
+  | "activity"
   | "insights"
   | "settings";
 

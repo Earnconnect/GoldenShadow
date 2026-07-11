@@ -7,6 +7,7 @@ import {
 } from "@/lib/stripe";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendEmail, emailShell, studioInbox, siteUrl, esc } from "@/lib/email";
+import { logActivity } from "@/lib/activity";
 
 // Stripe needs the raw request body to verify the signature.
 export const dynamic = "force-dynamic";
@@ -56,6 +57,16 @@ export async function POST(request: NextRequest) {
         stripe_session_id: session.id,
         stripe_customer_id:
           typeof session.customer === "string" ? session.customer : null,
+      });
+
+      await logActivity({
+        action: "order.paid",
+        actor: email ?? "customer",
+        detail: `${tier ?? "order"} — ${
+          session.amount_total != null
+            ? (session.amount_total / 100).toFixed(2)
+            : "?"
+        } ${(session.currency ?? "").toUpperCase()}`,
       });
 
       // Best-effort: upgrade the buyer's membership plan if they have an account
