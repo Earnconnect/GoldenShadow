@@ -4,6 +4,7 @@ import { signOut } from "@/app/admin/actions";
 const TABS: { href: string; key: string; label: string }[] = [
   { href: "/admin", key: "applications", label: "Applications" },
   { href: "/admin/orders", key: "orders", label: "Orders" },
+  { href: "/admin/promos", key: "promos", label: "Promos" },
   { href: "/admin/inquiries", key: "inquiries", label: "Inquiries" },
   { href: "/admin/studio", key: "studio", label: "Studio" },
   { href: "/admin/journal", key: "journal", label: "Journal" },
@@ -17,6 +18,7 @@ const TABS: { href: string; key: string; label: string }[] = [
 export type AdminTab =
   | "applications"
   | "orders"
+  | "promos"
   | "inquiries"
   | "studio"
   | "journal"
