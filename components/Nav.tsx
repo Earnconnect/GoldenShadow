@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { navLinks } from "@/lib/data";
 import NavAuth from "@/components/NavAuth";
+import MobileNav from "@/components/MobileNav";
 
 export default function Nav() {
   return (
@@ -16,6 +17,7 @@ export default function Nav() {
         ))}
       </ul>
       <NavAuth />
+      <MobileNav />
     </nav>
   );
 }
