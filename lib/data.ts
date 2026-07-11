@@ -29,6 +29,7 @@ export type Creator = {
   bio: string[];
   projects: CreatorProject[];
   featured?: boolean;
+  avatarUrl?: string;
 };
 
 export type CheckoutConfig = {

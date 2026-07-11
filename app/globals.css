@@ -3011,6 +3011,50 @@ html[data-scrolled] nav {
 }
 
 /* ── RESPONSIVE ──────────────────────────────────────────── */
+/* ── CREATOR AVATARS / PHOTO UPLOAD ──────────────────────── */
+.creator-avatar,
+.profile-avatar {
+  overflow: hidden;
+}
+.creator-avatar img,
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: inherit;
+}
+.avatar-upload {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+.avatar-preview {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--black);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--serif);
+  font-size: 30px;
+  flex-shrink: 0;
+}
+.avatar-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.avatar-btn {
+  cursor: pointer;
+}
+
 /* ── MOBILE NAV ──────────────────────────────────────────── */
 .mobile-nav {
   display: none;

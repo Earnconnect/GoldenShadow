@@ -4,7 +4,14 @@ import type { Creator } from "@/lib/data";
 export default function CreatorCard({ creator }: { creator: Creator }) {
   return (
     <Link className="creator-card" href={`/creators/${creator.slug}`}>
-      <div className="creator-avatar">{creator.initial}</div>
+      <div className="creator-avatar">
+        {creator.avatarUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={creator.avatarUrl} alt={creator.name} loading="lazy" />
+        ) : (
+          creator.initial
+        )}
+      </div>
       <div className="creator-info">
         <p className="creator-tag">{creator.tag}</p>
         <h3 className="creator-name">{creator.name}</h3>

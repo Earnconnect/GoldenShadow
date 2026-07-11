@@ -20,6 +20,7 @@ type CreatorRow = {
   bio: string[] | null;
   projects: CreatorProject[] | null;
   featured: boolean | null;
+  avatar_url: string | null;
 };
 
 function rowToCreator(row: CreatorRow): Creator {
@@ -38,6 +39,7 @@ function rowToCreator(row: CreatorRow): Creator {
     bio: row.bio?.length ? row.bio : seed?.bio ?? [],
     projects: row.projects?.length ? row.projects : seed?.projects ?? [],
     featured: row.featured ?? false,
+    avatarUrl: row.avatar_url ?? undefined,
   };
 }
 

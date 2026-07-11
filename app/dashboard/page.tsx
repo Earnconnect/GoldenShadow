@@ -5,6 +5,7 @@ import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import PageHeader from "@/components/PageHeader";
 import CreatorProfileEditor from "@/components/CreatorProfileEditor";
+import AvatarUpload from "@/components/AvatarUpload";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { getSession, isAdmin, canUseStudio, PLAN_LABEL } from "@/lib/auth";
@@ -387,6 +388,12 @@ export default async function DashboardPage() {
                 after saving.
               </p>
               <div style={{ maxWidth: "720px" }}>
+                <AvatarUpload
+                  userId={session.userId}
+                  initial={creator.initial}
+                  name={creator.name}
+                  currentUrl={creator.avatarUrl}
+                />
                 <CreatorProfileEditor creator={creator} />
               </div>
             </>

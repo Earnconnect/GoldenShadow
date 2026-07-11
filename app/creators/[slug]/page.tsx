@@ -54,7 +54,14 @@ export default async function CreatorProfilePage({
         <section className="page-section" style={{ paddingTop: "16px" }}>
           <div className="profile">
             <aside className="profile-aside">
-              <div className="profile-avatar">{creator.initial}</div>
+              <div className="profile-avatar">
+                {creator.avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={creator.avatarUrl} alt={creator.name} />
+                ) : (
+                  creator.initial
+                )}
+              </div>
               <p className="creator-tag">{creator.tag}</p>
               <h1>{creator.name}</h1>
               <p className="profile-role">{creator.role}</p>

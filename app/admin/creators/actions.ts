@@ -38,10 +38,10 @@ export async function saveCreator(formData: FormData) {
   const existingSlug = String(formData.get("slug") ?? "").trim();
   const slug = existingSlug || slugify(name);
 
-  // Preserve projects (not edited here) from any existing row.
+  // Preserve fields not edited on this form (projects, avatar) from any row.
   const { data: existing } = await admin
     .from("creators")
-    .select("projects")
+    .select("projects, avatar_url")
     .eq("slug", slug)
     .maybeSingle();
 
@@ -60,6 +60,7 @@ export async function saveCreator(formData: FormData) {
       focus: splitCommas(String(formData.get("focus") ?? "")),
       bio: splitParas(String(formData.get("bio") ?? "")),
       projects: existing?.projects ?? [],
+      avatar_url: existing?.avatar_url ?? null,
       featured: formData.get("featured") === "on",
       updated_at: new Date().toISOString(),
     },

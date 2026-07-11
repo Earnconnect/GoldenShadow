@@ -7,6 +7,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { getSession } from "@/lib/auth";
 import { getCreatorBySlug as getStaticCreatorBySlug } from "@/lib/data";
+import { getCreatorBySlug } from "@/lib/creators-db";
 import { sendEmail, emailShell, siteUrl, esc } from "@/lib/email";
 
 export type SaveState = {
@@ -171,6 +172,54 @@ export async function postInquiryMessage(formData: FormData) {
   }
 
   revalidatePath("/dashboard");
+}
+
+// Persist a newly-uploaded profile photo URL onto the creator's row.
+// Upserts (preserving existing fields) so it works even before the first
+// profile save. Called from the AvatarUpload client component.
+export async function saveAvatar(
+  url: string
+): Promise<{ ok: boolean; message: string }> {
+  if (!isSupabaseConfigured)
+    return { ok: false, message: "Not connected to the database." };
+  const session = await getSession();
+  if (!session) redirect("/login");
+  const slug = session.profile?.creator_slug;
+  if (!slug)
+    return { ok: false, message: "No creator profile is linked to your account." };
+  if (typeof url !== "string" || !url.startsWith("http"))
+    return { ok: false, message: "Invalid image." };
+
+  const current = await getCreatorBySlug(slug);
+  const seed = getStaticCreatorBySlug(slug);
+  const supabase = await createClient();
+  const { error } = await supabase.from("creators").upsert(
+    {
+      slug,
+      user_id: session.userId,
+      updated_at: new Date().toISOString(),
+      initial:
+        current?.initial ?? seed?.initial ?? slug.charAt(0).toUpperCase(),
+      tag: current?.tag ?? seed?.tag ?? null,
+      category_slug: current?.categorySlug ?? seed?.categorySlug ?? null,
+      name: current?.name ?? seed?.name ?? "Creator",
+      role: current?.role ?? null,
+      desc: current?.desc ?? null,
+      badge: current?.badge ?? seed?.badge ?? null,
+      focus: current?.focus ?? [],
+      bio: current?.bio ?? [],
+      projects: current?.projects ?? [],
+      avatar_url: url,
+    },
+    { onConflict: "slug" }
+  );
+  if (error) return { ok: false, message: error.message };
+
+  revalidatePath("/dashboard");
+  revalidatePath(`/creators/${slug}`);
+  revalidatePath("/creators");
+  revalidatePath("/");
+  return { ok: true, message: "Photo updated." };
 }
 
 export async function signOut() {
