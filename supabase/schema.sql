@@ -469,6 +469,32 @@ create policy "users delete own avatars"
     and (storage.foldername(name))[1] = auth.uid()::text
   );
 
+-- ── Storage: book images (Phase 10: in-editor image uploads) ──
+insert into storage.buckets (id, name, public)
+values ('book-images', 'book-images', true)
+on conflict (id) do nothing;
+
+drop policy if exists "public read book-images" on storage.objects;
+create policy "public read book-images"
+  on storage.objects for select to anon, authenticated
+  using (bucket_id = 'book-images');
+
+drop policy if exists "users upload own book-images" on storage.objects;
+create policy "users upload own book-images"
+  on storage.objects for insert to authenticated
+  with check (
+    bucket_id = 'book-images'
+    and (storage.foldername(name))[1] = auth.uid()::text
+  );
+
+drop policy if exists "users update own book-images" on storage.objects;
+create policy "users update own book-images"
+  on storage.objects for update to authenticated
+  using (
+    bucket_id = 'book-images'
+    and (storage.foldername(name))[1] = auth.uid()::text
+  );
+
 -- ─────────────────────────────────────────────────────────────
 -- NOTE ON ROLES & ACCESS
 -- New sign-ups default to role 'creator'. To make yourself a studio admin

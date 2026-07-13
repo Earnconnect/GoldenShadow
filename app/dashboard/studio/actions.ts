@@ -11,12 +11,13 @@ import {
   generateBookArchitecture,
   generateProductSuite,
 } from "@/lib/anthropic/engine";
-import type {
-  ArtifactRow,
-  ArtifactKind,
-  IPBlueprint,
-  StageResult,
-  ArtifactContent,
+import {
+  toChapterSet,
+  type ArtifactRow,
+  type ArtifactKind,
+  type IPBlueprint,
+  type StageResult,
+  type ArtifactContent,
 } from "@/lib/anthropic/types";
 
 export type StudioState = {
@@ -183,6 +184,50 @@ async function runStage(
         : `${title} generated.`) + truncationNote(result),
     artifact: artifact ?? undefined,
   };
+}
+
+// ── Chapter editing (WYSIWYG) ──────────────────────────────────
+export async function saveChapterEdit(
+  chapterNumber: number,
+  html: string
+): Promise<{ ok: boolean; message: string }> {
+  if (!isSupabaseConfigured)
+    return { ok: false, message: "Database not connected yet." };
+  const session = await requireCreatorSession();
+  if (!canUseStudio(session))
+    return { ok: false, message: "Studio or Platform plan required." };
+
+  const row = await loadArtifact(session.userId, "chapter");
+  if (!row) return { ok: false, message: "No chapters to edit yet." };
+
+  const set = toChapterSet(row.content);
+  const idx = set.chapters.findIndex((c) => c.number === chapterNumber);
+  if (idx === -1) return { ok: false, message: "Chapter not found." };
+
+  set.chapters[idx] = {
+    ...set.chapters[idx],
+    html: String(html ?? "").slice(0, 300000),
+  };
+
+  await upsertArtifact({
+    userId: session.userId,
+    creatorSlug: session.profile?.creator_slug ?? null,
+    kind: "chapter",
+    title: row.title || "Book Chapters",
+    content: set,
+    model: row.model,
+  });
+
+  await logActivity({
+    action: "chapter.edited",
+    userId: session.userId,
+    actor: session.profile?.full_name || session.email || "member",
+    detail: `edited chapter ${chapterNumber}`,
+  });
+
+  revalidatePath("/dashboard/studio/book");
+  revalidatePath("/dashboard/studio");
+  return { ok: true, message: "Saved." };
 }
 
 // ── Stage actions (the chapter stage streams via /api/studio/chapter) ──

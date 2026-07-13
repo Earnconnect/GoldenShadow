@@ -58,6 +58,7 @@ export interface ChapterDraft {
   chapterTitle: string;
   markdown: string;
   wordCountEstimate: number;
+  html?: string; // WYSIWYG-edited content; overrides markdown when present
 }
 
 // A chapter artifact now holds a *set* of drafted chapters (whole-book drafting).

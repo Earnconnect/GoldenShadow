@@ -113,6 +113,22 @@ export default async function StudioPage() {
           ]}
         />
         <section className="page-section">
+          {artifacts.some((a) => a.kind === "chapter") && (
+            <Link
+              href="/dashboard/studio/book"
+              className="studio-cta"
+              style={{ marginBottom: "32px" }}
+            >
+              <div>
+                <h3>Edit &amp; export your book</h3>
+                <p>
+                  Open the full editor to refine each chapter, insert images,
+                  and export to PDF, Word, or Markdown.
+                </p>
+              </div>
+              <span className="studio-cta-arrow">Open the Book Editor →</span>
+            </Link>
+          )}
           <StudioEngine
             initialArtifacts={artifacts}
             configured={isAnthropicConfigured}

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Golden Shadow Publishing — Project Quote</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#1a1712;--ink2:#534b3d;--cream:#f7f3ea;--paper:#fffdf8;
+    --gold:#a9772f;--gold2:#c79a4f;--line:#e7e0d1;
+    --serif:'Fraunces',Georgia,serif;--sans:'Inter',system-ui,sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:var(--sans);color:var(--ink);background:var(--cream);line-height:1.6;-webkit-font-smoothing:antialiased;padding:40px 20px}
+  h1,h2,h3{font-family:var(--serif);font-weight:600;letter-spacing:-0.015em;line-height:1.12}
+  em{font-style:italic;color:var(--gold)}
+  .sheet{max-width:760px;margin:0 auto;background:var(--paper);border:1px solid var(--line);border-radius:8px;overflow:hidden;box-shadow:0 30px 70px -40px rgba(26,23,18,.4)}
+
+  .head{background:linear-gradient(160deg,#1a1712,#2a2318);color:#f3ecdd;padding:42px 48px;position:relative;overflow:hidden}
+  .head::after{content:"GS";position:absolute;right:-20px;bottom:-60px;font-family:var(--serif);font-size:200px;font-weight:700;color:rgba(201,154,79,.08);line-height:1}
+  .brand{font-family:var(--serif);font-size:20px;color:#fff;font-weight:600}
+  .brand span{color:var(--gold2)}
+  .doc-label{margin-top:24px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold2);font-weight:600}
+  .head h1{color:#fff;font-size:40px;margin-top:6px}
+
+  .body{padding:40px 48px 46px}
+  .meta{display:grid;grid-template-columns:1fr 1fr;gap:24px;padding-bottom:28px;border-bottom:1px solid var(--line)}
+  .meta .l{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:6px}
+  .meta .v{font-size:15px;color:var(--ink)}
+  .meta .v small{display:block;color:var(--ink2);font-size:13px;margin-top:2px}
+
+  .scope{padding:26px 0;border-bottom:1px solid var(--line)}
+  .scope h3{font-size:17px;margin-bottom:10px}
+  .scope p{font-size:14.5px;color:var(--ink2)}
+  .scope ul{list-style:none;margin-top:14px;columns:2;column-gap:28px}
+  .scope li{font-size:13.5px;color:var(--ink2);padding-left:18px;position:relative;margin-bottom:8px;break-inside:avoid}
+  .scope li::before{content:"";position:absolute;left:0;top:8px;width:6px;height:6px;background:var(--gold);border-radius:50%}
+
+  table{width:100%;border-collapse:collapse;margin-top:26px}
+  th{text-align:left;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);font-weight:600;padding:0 0 12px;border-bottom:1px solid var(--line)}
+  th.r,td.r{text-align:right}
+  td{padding:18px 0;border-bottom:1px solid var(--line);font-size:15px;vertical-align:top}
+  td .desc{color:var(--ink2);font-size:13px;margin-top:3px}
+  .total-row td{border-bottom:none;padding-top:22px}
+  .total-row .lbl{font-family:var(--serif);font-size:18px;font-weight:600}
+  .total-row .amt{font-family:var(--serif);font-size:30px;font-weight:600;color:var(--gold)}
+
+  .note{background:#fbf7ec;border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:4px;padding:18px 22px;font-size:13.5px;color:var(--ink2);margin-top:30px}
+  .note strong{color:var(--ink)}
+
+  .terms{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:30px}
+  .terms .l{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:5px}
+  .terms p{font-size:13.5px;color:var(--ink2)}
+
+  .sign{margin-top:38px;padding-top:26px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:20px}
+  .sign .from{font-size:14px;color:var(--ink2)}
+  .sign .from b{font-family:var(--serif);font-size:17px;color:var(--ink);display:block}
+  .thanks{font-family:var(--serif);font-style:italic;color:var(--gold);font-size:18px}
+
+  @media(max-width:560px){
+    .head,.body{padding-left:26px;padding-right:26px}
+    .meta,.terms{grid-template-columns:1fr}
+    .scope ul{columns:1}
+  }
+</style>
+</head>
+<body>
+  <div class="sheet">
+    <div class="head">
+      <div class="brand">Golden Shadow <span>Publishing</span></div>
+      <p class="doc-label">Project Quote · Workmanship</p>
+      <h1>Design &amp; development<br>of the <em>platform.</em></h1>
+    </div>
+
+    <div class="body">
+      <div class="meta">
+        <div>
+          <div class="l">Prepared for</div>
+          <div class="v">Golden Shadow Publishing<small>Project owner / client</small></div>
+        </div>
+        <div>
+          <div class="l">Quote details</div>
+          <div class="v">Quote #GSP-001<small>Issued June 2026 · Valid 30 days</small></div>
+        </div>
+      </div>
+
+      <div class="scope">
+        <h3>What this covers</h3>
+        <p>My workmanship — the full design and development of the Golden Shadow Publishing platform, built, deployed live to <strong>goldenshadowhouse.com</strong>, and secured. Delivered in full:</p>
+        <ul>
+          <li>Brand landing experience &amp; public marketplace</li>
+          <li>Creator directory, profiles &amp; categories</li>
+          <li>Editorial journal with search, tags &amp; covers</li>
+          <li>Application flow &amp; member accounts</li>
+          <li>Member dashboards &amp; account settings</li>
+          <li>The AI Studio Engine (4-stage book builder)</li>
+          <li>In-platform messaging between members &amp; creators</li>
+          <li>Stripe payments &amp; membership plans</li>
+          <li>The full 9-tool admin command center</li>
+          <li>Deployment, SSL setup &amp; GitHub handover</li>
+        </ul>
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>Description</th><th class="r">Amount</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              Full-stack design &amp; development — workmanship
+              <div class="desc">Complete build of the Golden Shadow Publishing platform, delivered live and secured.</div>
+            </td>
+            <td class="r">$400.00</td>
+          </tr>
+          <tr class="total-row">
+            <td class="lbl">Total due</td>
+            <td class="r amt">$400.00</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="note">
+        <strong>This is my workmanship fee only.</strong> The platform's running services — domain, hosting, database, payments processing, and the AI engine — are billed directly to you by their providers at their own rates. I never mark them up.
+      </div>
+
+      <div class="terms">
+        <div>
+          <div class="l">Payment</div>
+          <p>Due on acceptance of this quote and delivery of the live platform.</p>
+        </div>
+        <div>
+          <div class="l">Included</div>
+          <p>All work listed above, deployed live to your domain, with the code in your GitHub repository.</p>
+        </div>
+      </div>
+
+      <div class="sign">
+        <div class="from">
+          Prepared by
+          <b>Tojola Samuel</b>
+          Developer &amp; design partner
+        </div>
+        <div class="thanks">Thank you.</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

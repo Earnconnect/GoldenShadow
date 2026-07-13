@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(git add *)",
+      "Bash(grep -aoE \"re_[A-Za-z0-9_]{20,}|sk-ant|sk_live_[A-Za-z0-9]{10}|eyJ[A-Za-z0-9_-]{25}\")",
+      "Bash(git commit -q -m ' *)",
+      "Bash(git push *)",
+      "Bash(grep -nE \"min-width: *[0-9]{3,}\" app/globals.css)",
+      "Bash(npm install *)"
+    ]
+  }
+}

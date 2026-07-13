@@ -3011,6 +3011,140 @@ html[data-scrolled] nav {
 }
 
 /* ── RESPONSIVE ──────────────────────────────────────────── */
+/* ── BOOK EDITOR (TipTap WYSIWYG) ────────────────────────── */
+.book-export-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 40px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--g300);
+}
+.book-chapter {
+  margin-bottom: 44px;
+}
+.book-chapter-label {
+  font-family: var(--serif);
+  font-size: 18px;
+  margin-bottom: 14px;
+}
+.chapter-editor {
+  border: 1px solid var(--g300);
+  background: var(--white);
+}
+.ed-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--g300);
+  background: var(--g100);
+  position: sticky;
+  top: 68px;
+  z-index: 5;
+}
+.ed-btn {
+  font-family: var(--sans);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--g700);
+  background: var(--white);
+  border: 1px solid var(--g300);
+  padding: 6px 11px;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+.ed-btn:hover {
+  color: var(--black);
+  border-color: var(--g500);
+}
+.ed-btn.active {
+  background: var(--black);
+  color: var(--white);
+  border-color: var(--black);
+}
+.tiptap {
+  padding: 26px 30px;
+  min-height: 240px;
+  outline: none;
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--black);
+}
+.tiptap:focus {
+  outline: none;
+}
+.tiptap h1 {
+  font-family: var(--serif);
+  font-size: 30px;
+  font-weight: 500;
+  margin: 8px 0 16px;
+  line-height: 1.2;
+}
+.tiptap h2 {
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 500;
+  margin: 26px 0 12px;
+}
+.tiptap h3 {
+  font-family: var(--serif);
+  font-size: 19px;
+  font-weight: 600;
+  margin: 22px 0 10px;
+}
+.tiptap p {
+  margin: 0 0 16px;
+}
+.tiptap ul,
+.tiptap ol {
+  margin: 0 0 16px;
+  padding-left: 26px;
+}
+.tiptap li {
+  margin-bottom: 6px;
+}
+.tiptap blockquote {
+  border-left: 3px solid var(--g300);
+  padding-left: 18px;
+  margin: 0 0 16px;
+  color: var(--g700);
+  font-style: italic;
+}
+.tiptap img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 18px 0;
+  border: 1px solid var(--g300);
+}
+.tiptap a {
+  color: var(--black);
+  text-decoration: underline;
+}
+.tiptap:empty::before,
+.tiptap p.is-editor-empty:first-child::before {
+  content: "Start writing…";
+  color: var(--g500);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+.ed-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px;
+  border-top: 1px solid var(--g300);
+  background: var(--g100);
+}
+.ed-msg {
+  font-size: 13px;
+  color: var(--g700);
+}
+
 /* ── CREATOR AVATARS / PHOTO UPLOAD ──────────────────────── */
 .creator-avatar,
 .profile-avatar {
