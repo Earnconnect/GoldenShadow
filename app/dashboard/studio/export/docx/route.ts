@@ -1,16 +1,16 @@
-import { NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import HTMLtoDOCX from "@turbodocx/html-to-docx";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { getSession } from "@/lib/auth";
 import { toChapterSet, type ArtifactRow } from "@/lib/anthropic/types";
-import { bookHtml } from "@/lib/book";
+import { bookHtml, singleChapterHtml } from "@/lib/book";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   if (!isSupabaseConfigured) {
     return NextResponse.json({ error: "not configured" }, { status: 404 });
   }
@@ -32,12 +32,16 @@ export async function GET() {
     return NextResponse.json({ error: "no chapters" }, { status: 400 });
   }
 
-  const html = `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body>${bookHtml(
-    set
-  )}</body></html>`;
+  const chapterParam = request.nextUrl.searchParams.get("chapter");
+  const chapterNum = chapterParam ? Number(chapterParam) : NaN;
+  const single = Number.isFinite(chapterNum);
+  const inner = single ? singleChapterHtml(set, chapterNum) : bookHtml(set);
+  const filename = single ? `chapter-${chapterNum}.docx` : "book.docx";
+
+  const html = `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body>${inner}</body></html>`;
 
   const buffer = (await HTMLtoDOCX(html, undefined, {
-    title: "Golden Shadow — Book",
+    title: set.bookTitle || "Golden Shadow — Book",
     orientation: "portrait",
   })) as Buffer;
 
@@ -45,7 +49,7 @@ export async function GET() {
     headers: {
       "Content-Type":
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      "Content-Disposition": 'attachment; filename="book.docx"',
+      "Content-Disposition": `attachment; filename="${filename}"`,
     },
   });
 }

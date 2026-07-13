@@ -230,6 +230,42 @@ export async function saveChapterEdit(
   return { ok: true, message: "Saved." };
 }
 
+// Save book-level metadata (title / subtitle / author / cover) for exports.
+export async function saveBookMeta(meta: {
+  bookTitle?: string;
+  subtitle?: string;
+  author?: string;
+  coverUrl?: string;
+}): Promise<{ ok: boolean; message: string }> {
+  if (!isSupabaseConfigured)
+    return { ok: false, message: "Database not connected yet." };
+  const session = await requireCreatorSession();
+  if (!canUseStudio(session))
+    return { ok: false, message: "Studio or Platform plan required." };
+
+  const row = await loadArtifact(session.userId, "chapter");
+  if (!row) return { ok: false, message: "Draft a chapter first." };
+
+  const set = toChapterSet(row.content);
+  set.bookTitle = (meta.bookTitle ?? "").slice(0, 200) || undefined;
+  set.subtitle = (meta.subtitle ?? "").slice(0, 300) || undefined;
+  set.author = (meta.author ?? "").slice(0, 200) || undefined;
+  if (meta.coverUrl !== undefined)
+    set.coverUrl = meta.coverUrl.trim() || undefined;
+
+  await upsertArtifact({
+    userId: session.userId,
+    creatorSlug: session.profile?.creator_slug ?? null,
+    kind: "chapter",
+    title: row.title || "Book Chapters",
+    content: set,
+    model: row.model,
+  });
+
+  revalidatePath("/dashboard/studio/book");
+  return { ok: true, message: "Saved." };
+}
+
 // ── Stage actions (the chapter stage streams via /api/studio/chapter) ──
 export async function runBlueprint(guidance?: string): Promise<StudioState> {
   return runStage("blueprint", "IP Blueprint", (sourceText) =>

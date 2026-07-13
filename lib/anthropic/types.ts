@@ -61,9 +61,14 @@ export interface ChapterDraft {
   html?: string; // WYSIWYG-edited content; overrides markdown when present
 }
 
-// A chapter artifact now holds a *set* of drafted chapters (whole-book drafting).
+// A chapter artifact now holds a *set* of drafted chapters (whole-book drafting)
+// plus optional book-level metadata for the title/cover page on export.
 export interface ChapterSet {
   chapters: ChapterDraft[];
+  bookTitle?: string;
+  subtitle?: string;
+  author?: string;
+  coverUrl?: string;
 }
 
 // ── Stage 4: Product Suite ─────────────────────────────────────

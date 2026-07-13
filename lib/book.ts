@@ -33,8 +33,42 @@ export function chapterHtml(ch: ChapterDraft): string {
   )}</section>`;
 }
 
+// Title / cover page (empty string if no metadata is set).
+export function titlePageHtml(set: ChapterSet): string {
+  const title = set.bookTitle?.trim();
+  const cover = set.coverUrl?.trim();
+  const subtitle = set.subtitle?.trim();
+  const author = set.author?.trim();
+  if (!title && !cover && !subtitle && !author) return "";
+
+  const parts = ['<section class="title-page" style="text-align:center;">'];
+  if (cover)
+    parts.push(
+      `<p><img src="${cover}" alt="Cover" style="max-width:70%;height:auto;" /></p>`
+    );
+  if (title)
+    parts.push(
+      `<h1 style="font-size:34px;margin:24px 0 8px;">${esc(title)}</h1>`
+    );
+  if (subtitle)
+    parts.push(
+      `<p style="font-size:18px;color:#555;margin:0 0 8px;">${esc(subtitle)}</p>`
+    );
+  if (author)
+    parts.push(`<p style="margin-top:28px;">by ${esc(author)}</p>`);
+  parts.push("</section>");
+  return parts.join("\n");
+}
+
 export function bookHtml(set: ChapterSet): string {
-  return sorted(set).map(chapterHtml).join("\n");
+  const cover = titlePageHtml(set);
+  const body = sorted(set).map(chapterHtml).join("\n");
+  return (cover ? `${cover}\n` : "") + body;
+}
+
+export function singleChapterHtml(set: ChapterSet, n: number): string {
+  const ch = set.chapters.find((c) => c.number === n);
+  return ch ? chapterHtml(ch) : "";
 }
 
 const turndown = new TurndownService({
@@ -50,5 +84,16 @@ export function chapterMarkdown(ch: ChapterDraft): string {
 }
 
 export function bookMarkdown(set: ChapterSet): string {
-  return sorted(set).map(chapterMarkdown).join("\n\n---\n\n");
+  const head: string[] = [];
+  if (set.bookTitle?.trim()) head.push(`# ${set.bookTitle.trim()}`);
+  if (set.subtitle?.trim()) head.push(`### ${set.subtitle.trim()}`);
+  if (set.author?.trim()) head.push(`_by ${set.author.trim()}_`);
+  if (set.coverUrl?.trim()) head.push(`![cover](${set.coverUrl.trim()})`);
+  const front = head.length ? `${head.join("\n\n")}\n\n---\n\n` : "";
+  return front + sorted(set).map(chapterMarkdown).join("\n\n---\n\n");
+}
+
+export function singleChapterMarkdown(set: ChapterSet, n: number): string {
+  const ch = set.chapters.find((c) => c.number === n);
+  return ch ? chapterMarkdown(ch) : "";
 }

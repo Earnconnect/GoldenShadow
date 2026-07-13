@@ -5,10 +5,15 @@ import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import PageHeader from "@/components/PageHeader";
 import ChapterEditor from "@/components/studio/ChapterEditor";
+import BookMeta from "@/components/studio/BookMeta";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { getSession, canUseStudio } from "@/lib/auth";
-import { toChapterSet, type ArtifactRow } from "@/lib/anthropic/types";
+import {
+  toChapterSet,
+  type ArtifactRow,
+  type ChapterSet,
+} from "@/lib/anthropic/types";
 import { chapterBodyHtml } from "@/lib/book";
 
 export const metadata: Metadata = {
@@ -33,7 +38,9 @@ export default async function BookEditorPage() {
     .eq("kind", "chapter")
     .maybeSingle();
 
-  const set = data ? toChapterSet((data as ArtifactRow).content) : { chapters: [] };
+  const set: ChapterSet = data
+    ? toChapterSet((data as ArtifactRow).content)
+    : { chapters: [] };
   const chapters = [...set.chapters].sort((a, b) => a.number - b.number);
 
   return (
@@ -67,6 +74,24 @@ export default async function BookEditorPage() {
             </div>
           ) : (
             <>
+              <p className="profile-section-label">Cover &amp; title page</p>
+              <BookMeta
+                userId={session.userId}
+                initial={{
+                  bookTitle: set.bookTitle,
+                  subtitle: set.subtitle,
+                  author:
+                    set.author ?? session.profile?.full_name ?? undefined,
+                  coverUrl: set.coverUrl,
+                }}
+              />
+
+              <p
+                className="profile-section-label"
+                style={{ marginTop: "44px" }}
+              >
+                Export the whole book
+              </p>
               <div className="book-export-bar">
                 <a className="btn-dark" href="/dashboard/studio/export/docx">
                   Download Word (.docx)
@@ -86,10 +111,28 @@ export default async function BookEditorPage() {
 
               {chapters.map((ch) => (
                 <div className="book-chapter" key={ch.number}>
-                  <p className="book-chapter-label">
-                    Chapter {ch.number}
-                    {ch.chapterTitle ? ` · ${ch.chapterTitle}` : ""}
-                  </p>
+                  <div className="book-chapter-head">
+                    <p className="book-chapter-label">
+                      Chapter {ch.number}
+                      {ch.chapterTitle ? ` · ${ch.chapterTitle}` : ""}
+                    </p>
+                    <div className="chapter-export">
+                      <span>Export:</span>
+                      <a href={`/dashboard/studio/export/docx?chapter=${ch.number}`}>
+                        Word
+                      </a>
+                      <a
+                        href={`/dashboard/studio/print?chapter=${ch.number}`}
+                        target="_blank"
+                        rel="noopener"
+                      >
+                        PDF
+                      </a>
+                      <a href={`/dashboard/studio/export/md?chapter=${ch.number}`}>
+                        Markdown
+                      </a>
+                    </div>
+                  </div>
                   <ChapterEditor
                     chapterNumber={ch.number}
                     title={ch.chapterTitle}
